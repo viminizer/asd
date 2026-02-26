@@ -40,8 +40,8 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 ## Installation
 
 ```bash
-/plugin marketplace add <your-github-username>/asd
-/plugin install asd@<your-github-username>/asd
+/plugin marketplace add viminizer/asd
+/plugin install asd@viminizer/asd
 ```
 
 ## Directory Structure
