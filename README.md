@@ -6,8 +6,8 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 
 | Component | Count |
 |-----------|-------|
-| Commands | 5 |
-| Skills | 6 |
+| Commands | 6 |
+| Skills | 7 |
 | Templates | 4 |
 
 ## Commands
@@ -16,6 +16,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 |---------|-------------|
 | `/asd:brainstorm` | Explore ideas before planning |
 | `/asd:plan` | Create implementation plans with validation |
+| `/asd:technical_review` | Get expert feedback on plans |
 | `/asd:execute` | Execute plans with checkpoint verification |
 | `/asd:review` | Multi-agent code review |
 | `/asd:capture` | Document learnings for team knowledge |
@@ -26,6 +27,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 |-------|-------------|
 | `brainstorming` | Explore user intent, propose approaches, capture design |
 | `planning` | Transform ideas into structured, validated plans |
+| `technical-review` | Get expert feedback on plans |
 | `execution-checkpoints` | Execute with verifiable checkpoints |
 | `review` | Systematic code review with severity prioritization |
 | `capture` | Document solved problems for knowledge compounding |
@@ -34,7 +36,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 ## Workflow
 
 ```
-/asd:brainstorm → /asd:plan → /asd:execute → /asd:review → /asd:capture
+/asd:brainstorm → /asd:plan → /asd:technical_review → /asd:execute → /asd:review → /asd:capture
 ```
 
 ## Installation
