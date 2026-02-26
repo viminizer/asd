@@ -6,7 +6,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 
 | Component | Count |
 |-----------|-------|
-| Commands | 8 |
+| Commands | 9 |
 | Skills | 9 |
 | Templates | 4 |
 
@@ -22,6 +22,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 | `/asd:capture` | Document learnings for team knowledge |
 | `/asd:fix` | Quick fix workflow - plan and fix in one command |
 | `/asd:dogfood` | QA web app, find bugs and UX issues |
+| `/asd:cleanup` | Archive old brainstorms and todos by month |
 
 ## Skills
 

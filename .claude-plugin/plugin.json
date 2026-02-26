@@ -1,7 +1,7 @@
 {
   "name": "asd",
-  "version": "0.5.0",
-  "description": "Accelerated Software Development - Enterprise workflow with brainstorming, planning, technical review, execution checkpoints, review, knowledge capture, quick fix, TDD, and QA dogfood. 8 commands, 9 skills, 4 templates.",
+  "version": "0.6.0",
+  "description": "Accelerated Software Development - Enterprise workflow with brainstorming, planning, technical review, execution checkpoints, review, knowledge capture, quick fix, TDD, QA dogfood, and cleanup. 9 commands, 9 skills, 4 templates.",
   "author": {
     "name": "Viminizer"
   },
