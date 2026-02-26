@@ -119,6 +119,107 @@ origin: docs/asd/design/YYYY-MM-DD-<topic>.md
 #### COMPREHENSIVE
 Includes: detailed implementation phases, alternative approaches, system-wide impact analysis, integration test scenarios.
 
+### Phase 5.5: Dependency Analysis (Mandatory)
+
+For each task/phase in the plan, explicitly determine:
+
+- **Direct dependencies** - What must complete first
+- **Indirect dependencies** - What affects indirectly
+- **Whether it mutates:**
+  - Database schema
+  - Shared APIs / DTOs
+  - Core domain models
+  - Cross-cutting concerns
+- **Whether it introduces foundational infrastructure**
+- **Whether it can execute in parallel** with other tasks
+
+No circular dependencies allowed.
+
+### Phase 5.6: Group Construction
+
+**A task MUST be isolated in its own group if it:**
+
+- Modifies database schema
+- Changes shared contracts (API, DTO, domain core)
+- Introduces foundational layers
+- Is internally depended upon by another task
+- Restructures core logic
+- Requires heavy reasoning or possible compaction
+
+**Tasks MAY share a group ONLY if:**
+
+- No direct dependency between them
+- No indirect dependency between them
+- No shared schema or contract mutation
+- They depend only on already-completed groups
+- They could be implemented safely in parallel
+
+If unsure → isolate. Dependency order overrides size.
+
+### Phase 5.7: Execution Contract
+
+Include this section in the generated plan:
+
+```markdown
+## Execution Contract
+
+### Branch Strategy
+
+Before starting Group 1:
+
+git checkout develop
+git pull
+git checkout -b feat/<FEATURE_NAME>
+
+All groups continue on the same branch.
+
+### Commit Strategy
+
+Within each group, commit per logical unit:
+
+- migration
+- entity
+- repository
+- service
+- controller
+- test class
+
+Rules:
+
+- Code compiles
+- Full test suite passes
+- No disabled tests
+- No partial implementations
+- Do not bundle an entire group into one commit
+
+Use conventional commits:
+feat(scope): add X
+refactor(scope): adjust Y
+fix(scope): correct Z
+test(scope): add coverage
+
+### Group Completion Protocol
+
+After completing a group:
+
+1. Run tests
+2. Verify:
+   - All tests pass (full suite)
+   - No uncommitted changes
+   - Acceptance criteria completed
+3. Commit all changes
+4. Clear context: /clear
+5. Start next group: /asd:execute <PLAN_FILE> group <NEXT_GROUP_ID>
+
+### Clean Context Rule
+
+A clean context is mandatory:
+- Between groups
+- After schema or contract mutations
+- After structural phases
+- If compaction occurred
+```
+
 ### Phase 6: VALIDATE PLAN
 
 **Before finalizing, run validation checklist:**
@@ -130,6 +231,10 @@ Includes: detailed implementation phases, alternative approaches, system-wide im
 - [ ] Technical approach is feasible
 - [ ] Files to modify are identified
 - [ ] Risks are documented
+- [ ] **Dependency graph is explicit** - Each task's dependencies are listed
+- [ ] **Group isolation rules applied** - Schema/contract changes isolated
+- [ ] **Execution contract included** - Branch strategy, commit rules, completion protocol
+- [ ] **No circular dependencies**
 
 **If validation fails:**
 - Fix issues
