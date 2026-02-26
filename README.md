@@ -7,7 +7,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 | Component | Count |
 |-----------|-------|
 | Commands | 7 |
-| Skills | 7 |
+| Skills | 8 |
 | Templates | 4 |
 
 ## Commands
@@ -30,6 +30,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 | `planning` | Transform ideas into structured, validated plans |
 | `technical-review` | Get expert feedback on plans |
 | `execution-checkpoints` | Execute with verifiable checkpoints |
+| `test-driven-development` | RED-GREEN-REFACTOR cycle before code |
 | `review` | Systematic code review with severity prioritization |
 | `capture` | Document solved problems for knowledge compounding |
 | `milestone-tracker` | Track progress across plans and milestones |
