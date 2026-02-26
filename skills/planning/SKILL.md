@@ -20,11 +20,11 @@ Create implementation plans from ideas or brainstorm output.
 **Always check first:**
 
 ```bash
-ls -la docs/asd/design/*.md 2>/dev/null | head -5
+ls -la docs/brainstorms/*.md 2>/dev/null | head -5
 ```
 
 **If brainstorm exists (within 14 days):**
-1. Read the design doc thoroughly
+1. Read the brainstorm doc thoroughly
 2. Extract: key decisions, approach, constraints, open questions
 3. Use as primary input
 4. Skip idea refinement
@@ -90,7 +90,7 @@ title: <title>
 type: feat|fix|refactor
 status: active
 date: YYYY-MM-DD
-origin: docs/asd/design/YYYY-MM-DD-<topic>.md
+origin: docs/brainstorms/YYYY-MM-DD-<topic>-brainstorm.md
 ---
 
 # <Title>

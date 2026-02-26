@@ -62,7 +62,7 @@ Cover: architecture, components, data flow, error handling, testing.
 
 ### Phase 5: Document
 
-Write to `docs/asd/design/YYYY-MM-DD-<topic>.md`:
+Write to `docs/brainstorms/YYYY-MM-DD-<topic>-brainstorm.md`:
 
 ```markdown
 ---
@@ -70,22 +70,43 @@ date: YYYY-MM-DD
 topic: <kebab-case-topic>
 ---
 
-# <Title>
+# <Topic Title>
 
 ## What We're Building
-[1-2 paragraphs]
+[Concise description—1-2 paragraphs max]
 
 ## Why This Approach
-[Why this was chosen over alternatives]
+[Brief explanation of approaches considered and why this one was chosen]
 
 ## Key Decisions
-- [Decision]: [Rationale]
+- [Decision 1]: [Rationale]
+- [Decision 2]: [Rationale]
 
 ## Open Questions
-- [Any unresolved for planning]
+- [Any unresolved questions for the planning phase]
 
 ## Next Steps
 → `/asd:plan`
+```
+
+### Alternative Approaches (Optional)
+
+If multiple valid approaches exist, document alternatives:
+
+```markdown
+### Approach A: [Name]
+
+[2-3 sentence description]
+
+**Pros:**
+- [Benefit 1]
+- [Benefit 2]
+
+**Cons:**
+- [Drawback 1]
+- [Drawback 2]
+
+**Best when:** [Circumstances where this approach shines]
 ```
 
 ### Phase 6: Transition
@@ -103,4 +124,4 @@ Invoke `/asd:plan` skill. Do NOT write code or implement.
 
 ## Integration
 
-When design doc exists, `/asd:plan` should detect it and use as input, skipping idea refinement.
+When brainstorm doc exists in `docs/brainstorms/`, `/asd:plan` should detect it and use as input, skipping idea refinement.
