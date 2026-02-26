@@ -6,8 +6,8 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 
 | Component | Count |
 |-----------|-------|
-| Commands | 7 |
-| Skills | 8 |
+| Commands | 8 |
+| Skills | 9 |
 | Templates | 4 |
 
 ## Commands
@@ -21,6 +21,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 | `/asd:review` | Multi-agent code review |
 | `/asd:capture` | Document learnings for team knowledge |
 | `/asd:fix` | Quick fix workflow - plan and fix in one command |
+| `/asd:dogfood` | QA web app, find bugs and UX issues |
 
 ## Skills
 
@@ -31,6 +32,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 | `technical-review` | Get expert feedback on plans |
 | `execution-checkpoints` | Execute with verifiable checkpoints |
 | `test-driven-development` | RED-GREEN-REFACTOR cycle before code |
+| `dogfood` | QA web app, find bugs and UX issues |
 | `review` | Systematic code review with severity prioritization |
 | `capture` | Document solved problems for knowledge compounding |
 | `milestone-tracker` | Track progress across plans and milestones |
