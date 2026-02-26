@@ -6,7 +6,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 
 | Component | Count |
 |-----------|-------|
-| Commands | 6 |
+| Commands | 7 |
 | Skills | 7 |
 | Templates | 4 |
 
@@ -20,6 +20,7 @@ Enterprise workflow plugin for coding agents with structured planning, execution
 | `/asd:execute` | Execute plans with checkpoint verification |
 | `/asd:review` | Multi-agent code review |
 | `/asd:capture` | Document learnings for team knowledge |
+| `/asd:fix` | Quick fix workflow - plan and fix in one command |
 
 ## Skills
 
