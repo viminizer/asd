@@ -1,0 +1,14 @@
+{
+  "templates": {
+    "plan": "templates/plan.md",
+    "design": "templates/design.md",
+    "milestone": "templates/milestone.md",
+    "solution": "templates/solution.md"
+  },
+  "directories": {
+    "designs": "docs/asd/design",
+    "plans": "docs/asd/plans",
+    "solutions": "docs/asd/solutions",
+    "milestones": "docs/asd/milestones.md"
+  }
+}
