@@ -39,81 +39,15 @@ Otherwise, ask questions one at a time via AskUserQuestion:
 - Task asd-learnings-researcher(feature_description)
 - Task asd-docs-researcher(feature_description)
 
-Launch all applicable agents in parallel. Wait for all to return. Synthesize findings into a unified research context for plan generation.
+Launch all applicable agents in parallel. Wait for all to return.
 
 ## Phase 3: Plan Generation
 
-### 3a. Load Template
-
-Read the plan template for structure reference:
-```
-Read templates/plan.md
-```
-
-### 3b. Scale to Scope
-
-Scale the plan naturally based on scope. Small changes get short plans. Large changes get more detail. No flags needed - just use good judgment.
-
-### 3c. Write Strategic Sections
-
-Generate the plan header sections per template:
-- Frontmatter (title, type, status, date, origin if brainstorm)
-- Problem statement, proposed solution
-- Technical considerations (if scope warrants)
-- Alternative approaches, system-wide impact (for large changes)
-
-### 3d. Write Bite-Sized Tasks
-
-Write tasks in sequential order (foundational work first, then features that build on it). Follow this TDD format:
-
-```
-### Task N: [Name]
-
-**Files:**
-- Create: exact/path/to/file.ext
-- Modify: exact/path/to/existing.ext
-- Test: tests/exact/path/to/test.ext
-
-**Step 1: Write failing test** [exact test code]
-**Step 2: Run test (expect fail)** [exact command + expected error]
-**Step 3: Implement** [exact implementation code]
-**Step 4: Verify** [exact command + expected PASS]
-**Step 5: Commit** [exact commit command]
-```
-
-**Task rules:**
-- Each task is one action (2-5 minutes)
-- Include exact file paths, exact code, exact commands
-- Assume the engineer has zero codebase context
-- Include expected output for verification commands
-
-### 3e. Write Footer Sections
-
-- Acceptance criteria (testable, specific)
-- Risks and dependencies
-
-## Phase 4: Validate, Write, and Next Steps
-
-### 4a. Self-Check
-
-Run the validation checklist. Max 2 fix iterations.
-
-- [ ] Title is descriptive and searchable
-- [ ] All acceptance criteria are testable (not vague)
-- [ ] Tasks are in logical sequential order (foundational work first)
-- [ ] Files to modify are identified with exact paths
-- [ ] Risks are documented
-- [ ] Brainstorm cross-check passed (if brainstorm exists: every key decision reflected)
-
-If validation fails: fix issues, re-validate. After 2 failures, write plan with warnings.
-
-### 4b. Write Plan
-
-```bash
-mkdir -p docs/plans/
-```
-
-Save to `docs/plans/YYYY-MM-DD-<type>-<name>-plan.md`
+Dispatch the `asd-plan-writer` agent with:
+- Feature description (and brainstorm context if available)
+- Raw research agent outputs from Phase 2 (pass them through, don't summarize)
+- Any constraints or decisions from user interaction
+- Plan file path: `docs/plans/YYYY-MM-DD-<type>-<name>-plan.md`
 
 Filename rules:
 - Date prefix required
@@ -121,16 +55,19 @@ Filename rules:
 - Kebab-case, 3-5 descriptive words
 - End with `-plan.md`
 
-### 4c. Agent Validation
+The plan-writer runs in a clean context, reads the template and relevant source files, and writes the complete plan file.
 
-Dispatch the plan validator on the written plan:
-- Task asd-plan-validator(plan_file_content)
+## Phase 4: Validate and Next Steps
 
-If validator returns issues:
-- Fix critical issues inline (max 2 iterations)
+### 4a. Agent Validation
+
+Dispatch the `asd-plan-validator` agent on the written plan.
+
+If validator returns critical issues:
+- Re-dispatch `asd-plan-writer` with the validator feedback and the current plan path (max 2 iterations)
 - Warnings are noted but don't block
 
-### 4d. Next Steps
+### 4b. Next Steps
 
 Use AskUserQuestion to present options:
 
@@ -140,7 +77,7 @@ Use AskUserQuestion to present options:
 
 ## Key Principles
 
-- **Validate before writing** - Plans must pass self-check
+- **Validate after writing** - Plans must pass agent validation
 - **YAGNI** - Scale plan to scope, no more
 - **Testable criteria** - Every acceptance criterion must be verifiable
 - **Zero-context tasks** - Engineer needs no prior codebase knowledge

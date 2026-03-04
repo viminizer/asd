@@ -1,6 +1,6 @@
 ---
 name: fix
-description: "Use when fixing bugs. Enforces root cause investigation before any fix attempt. Follows investigate, fix (TDD), review cycle."
+description: "Use when fixing bugs. Enforces root cause investigation before any fix attempt. Follows investigate, fix (TDD), review cycle. Dispatches asd-investigator for complex bugs."
 ---
 
 # Fix
@@ -18,27 +18,25 @@ No fixes without root cause investigation first.
 
 ## Phase 1: Investigate
 
-### 1a. Understand the bug
+### Simple bugs (root cause is obvious from the error)
 
-- Read the error message or bug description carefully
-- Identify the affected code area (use Grep and Glob to find relevant files)
-- Read the code around the failure point
+If the error message, stack trace, or context makes the root cause immediately clear (e.g. typo, missing null check, wrong variable name) - document the root cause and move to Phase 2.
 
-### 1b. Reproduce
+### Complex bugs (root cause is unclear)
 
-- Run the failing command, test, or scenario
-- Confirm the bug exists and is consistent
-- If it can't be reproduced, stop and report back
+Dispatch the `asd-investigator` agent with:
+- The bug description and error messages
+- Affected file paths or areas (if known)
+- Any initial observations you have
 
-### 1c. Find root cause
+The investigator runs in a clean context, traces the root cause backward through the call stack, and returns a diagnosis with location, evidence, and suggested fix.
 
-Trace the bug backward through the call stack. Don't fix where the error appears - find where the problem originates.
+**If the investigator returns "Inconclusive"**, either:
+- Provide more context and re-dispatch
+- Investigate manually using the narrowed-down area it identified
+- Stop and report to the user
 
-- Check recent changes (`git log`, `git diff`) for related modifications
-- Read the code path from entry point to failure
-- Identify the exact line or logic error causing the issue
-
-**Do not proceed to Phase 2 until you can explain WHY the bug happens, not just WHERE.**
+**Do not proceed to Phase 2 until the root cause is confirmed - you must be able to explain WHY the bug happens, not just WHERE.**
 
 ## Phase 2: Fix (TDD)
 
