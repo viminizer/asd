@@ -17,16 +17,15 @@ The orchestrator will provide the full plan content.
 Verify the plan has:
 - [ ] Clear problem statement
 - [ ] Solution with rationale
-- [ ] Tasks grouped by dependency order
+- [ ] Tasks in logical sequential order
 - [ ] Each task has file paths, test steps, and implementation steps
 - [ ] Acceptance criteria that are testable
 
-### 2. Dependency check
+### 2. Task ordering check
 
-For each task group:
-- Does it declare its dependencies correctly?
-- Would any task fail because a prerequisite isn't done yet?
-- Are there circular dependencies?
+For each task:
+- Would it fail because a prerequisite task hasn't run yet?
+- Is foundational work (schema, config, shared code) placed before tasks that depend on it?
 
 ### 3. File path check
 
@@ -60,7 +59,7 @@ Classify each task's complexity for model selection during execution:
 ### On PASS:
 
 ```
-PASS - Plan structure is valid, N tasks in M groups, no issues found.
+PASS - Plan structure is valid, N tasks, no issues found.
 
 Task complexity:
 - Task 1: simple

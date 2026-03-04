@@ -24,30 +24,17 @@ Read the plan file completely. Identify:
 - Security-sensitive areas (auth, payments, data handling)
 - Scale of change (number of files, complexity)
 
-### Phase 2: Plan quality check
+### Phase 2: Quick sanity check
 
-Assess the plan as a document. Ask:
+Planning already validates structure. Focus only on what planning can't catch:
 
-- **What is unclear?** - Vague language ("probably," "consider," "try to"), ambiguous requirements
-- **What is unnecessary?** - Over-engineered sections, hypothetical features, premature abstractions
-- **What decision is being avoided?** - Open questions that should be resolved before implementation
-- **What assumptions are unstated?** - Dependencies on external services, environment assumptions, data assumptions
-- **Where could scope expand?** - Tasks that are too broad, missing boundaries
+- **Unstated assumptions** - Dependencies on external services, environment, data
+- **Scope creep risk** - Tasks that are too broad or could expand
+- **Unresolved decisions** - Open questions that should be settled before execution
 
-Evaluate against:
+### Phase 3: Technical soundness
 
-| Criterion | What to check |
-|-----------|---------------|
-| **Clarity** | Problem statement is clear, tasks are unambiguous, no hand-waving |
-| **Completeness** | All acceptance criteria are testable, no gaps between tasks and criteria |
-| **Specificity** | Tasks have concrete file paths, code patterns, and expected behavior |
-| **YAGNI** | No hypothetical features, simplest approach chosen, no premature abstractions |
-
-### Phase 3: Technical soundness + implementation feasibility (parallel)
-
-Dispatch both agents in parallel:
-
-**Agent 1:** `asd-code-reviewer` for technical approach:
+Dispatch `asd-code-reviewer` for technical approach:
 
 ```
 Review scope: plan-level audit
@@ -59,14 +46,6 @@ Focus on the implementation strategy, not document quality.
 
 Run relevant passes: security, performance, architecture, database.
 Skip passes that don't apply based on plan content.
-```
-
-**Agent 2:** `asd-plan-validator` (haiku) for structure and feasibility:
-
-```
-[Full plan content]
-
-Validate task ordering, file paths, scope per task, and completeness.
 ```
 
 ### Phase 4: Learnings check (conditional)

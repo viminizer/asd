@@ -30,12 +30,16 @@ Otherwise, ask questions one at a time via AskUserQuestion:
 
 ## Phase 2: Research (Parallel)
 
-Launch all three research agents in parallel:
+**If brainstorm context exists** (codebase already scanned in brainstorm Phase 1):
+- Task asd-learnings-researcher(feature_description)
+- Task asd-docs-researcher(feature_description)
+
+**If no brainstorm context** (standalone `/asd:plan`):
 - Task asd-repo-researcher(feature_description)
 - Task asd-learnings-researcher(feature_description)
 - Task asd-docs-researcher(feature_description)
 
-Wait for all agents to return. Synthesize findings into a unified research context for plan generation.
+Launch all applicable agents in parallel. Wait for all to return. Synthesize findings into a unified research context for plan generation.
 
 ## Phase 3: Plan Generation
 

@@ -18,7 +18,7 @@ Workflow plugin for coding agents with structured planning, subagent-driven exec
 | `/asd:brainstorm` | Explore ideas before planning |
 | `/asd:plan` | Create implementation plans with research and validation |
 | `/asd:technical_review` | Review plans for quality, soundness, and feasibility |
-| `/asd:execute` | Execute plans with subagent-driven development and review loops |
+| `/asd:execute` | Execute plans with asd-forge agents and two-stage reviews |
 | `/asd:review` | Review code changes (diffs, PRs, branches) |
 | `/asd:review_feature` | Review an existing feature's implementation end-to-end |
 | `/asd:fix` | Fix bugs with root cause investigation and TDD |
@@ -33,7 +33,7 @@ Workflow plugin for coding agents with structured planning, subagent-driven exec
 | `brainstorming` | Explore user intent, propose approaches, transition to planning |
 | `planning` | Transform ideas into validated plans with TDD tasks |
 | `technical-review` | Check plan quality, technical soundness, implementation feasibility |
-| `execution-checkpoints` | Subagent-driven execution with parallel groups and combined reviews |
+| `execution-checkpoints` | Dispatch asd-forge per task with two-stage review |
 | `finishing-a-development-branch` | Present merge/PR/keep/discard options after execution |
 | `test-driven-development` | RED-GREEN-REFACTOR cycle before writing code |
 | `review` | Dispatch asd-code-reviewer on diffs and PRs |
@@ -60,7 +60,7 @@ Workflow plugin for coding agents with structured planning, subagent-driven exec
 ## Workflow
 
 ```
-/asd:brainstorm → /asd:plan → /asd:technical_review → /asd:execute → /asd:review → /asd:capture
+/asd:brainstorm → /asd:plan → /asd:technical_review → /asd:execute → /asd:capture
 ```
 
 Side workflows:

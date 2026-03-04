@@ -9,7 +9,7 @@ Document solved problems for team knowledge compounding.
 
 ## When to use
 
-- After `/asd:execute` and `/asd:review` complete
+- After `/asd:execute` completes
 - After fixing a bug with `/asd:fix`
 - After implementing a tricky feature
 - When a solution is worth remembering
@@ -32,7 +32,7 @@ Save to `docs/asd/solutions/YYYY-MM-DD-<topic>.md`
 
 Read the solution template for structure reference:
 ```
-Read @asd/templates/solution.md
+Read templates/solution.md
 ```
 
 Fill in each section from the gathered context:

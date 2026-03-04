@@ -33,7 +33,7 @@ Check if `docs/asd/milestones.md` exists:
 
 Read the milestone template for structure reference:
 ```
-Read @asd/templates/milestone.md
+Read templates/milestone.md
 ```
 
 Fill in: version, name, date, delivered summary, key accomplishments, file stats, git range, what's next.

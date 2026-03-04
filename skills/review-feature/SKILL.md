@@ -55,7 +55,7 @@ Filename rules:
 
 Read the review template for structure reference:
 ```
-Read @asd/templates/review.md
+Read templates/review.md
 ```
 
 Follow the template format. If no issues found, set verdict to `pass` and write "No issues found" under Findings.
