@@ -8,7 +8,7 @@ Workflow plugin for coding agents with structured planning, subagent-driven exec
 |-----------|-------|
 | Commands | 10 |
 | Skills | 12 |
-| Agents | 8 |
+| Agents | 9 |
 | Templates | 4 |
 
 ## Commands
@@ -51,6 +51,7 @@ Workflow plugin for coding agents with structured planning, subagent-driven exec
 | `asd-repo-researcher` | Research codebase patterns, conventions, and structure |
 | `asd-learnings-researcher` | Search past solutions for relevant institutional knowledge |
 | `asd-docs-researcher` | Search external documentation and best practices for planning context |
+| `asd-forge` | Implement a single plan task using TDD - write tests, code, and commit |
 | `asd-diff-analyzer` | Pre-filter diffs to determine which review passes are needed (haiku) |
 | `asd-file-scoper` | Find all files related to a feature for review scope (haiku) |
 | `asd-test-runner` | Run tests and return concise pass/fail summary (haiku) |
@@ -85,6 +86,7 @@ asd/
 │   ├── asd-repo-researcher.md
 │   ├── asd-learnings-researcher.md
 │   ├── asd-docs-researcher.md
+│   ├── asd-forge.md
 │   ├── asd-diff-analyzer.md
 │   ├── asd-file-scoper.md
 │   ├── asd-test-runner.md
