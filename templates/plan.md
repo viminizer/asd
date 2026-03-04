@@ -28,12 +28,7 @@ date: YYYY-MM-DD
 
 ## Implementation
 
-<!-- Group tasks by dependency order. -->
-<!-- Isolate tasks that modify schema, shared contracts, or foundational layers. -->
-
-### Group 1: [Name] (depends: none)
-
-#### Task 1: [Name]
+### Task 1: [Name]
 
 **Files:**
 - Create: `exact/path/to/file.ext`
@@ -45,18 +40,26 @@ date: YYYY-MM-DD
 // exact test code
 ```
 
-**Step 2: Implement**
+**Step 2: Run test (expect fail)**
+Run: `<test command>`
+Expected: FAIL with `<expected error>`
+
+**Step 3: Implement**
 ```language
 // exact implementation code
 ```
 
-**Step 3: Verify**
+**Step 4: Run test (expect pass)**
 Run: `<test command>`
 Expected: PASS
 
-### Group 2: [Name] (depends: Group 1)
+**Step 5: Commit**
+```bash
+git add <files>
+git commit -m "feat: description"
+```
 
-#### Task 2: [Name]
+### Task 2: [Name]
 <!-- Same structure as Task 1 -->
 
 ## Acceptance criteria

@@ -1,6 +1,6 @@
 ---
 name: asd:plan
-description: "Create implementation plans with research, dependency analysis, and bite-sized TDD tasks."
+description: "Create implementation plans with research and bite-sized TDD tasks."
 argument-hint: "[feature description]"
 ---
 
@@ -11,11 +11,10 @@ Transform feature descriptions into validated implementation plans.
 ## What It Does
 
 1. **Input** - Use brainstorm context if available, or refine idea with user
-2. **Research** - Parallel local research via `asd-repo-researcher` + `asd-learnings-researcher`. External research if needed.
-3. **Plan** - Strategic overview + dependency-ordered groups with bite-sized TDD tasks
-4. **Validate** - Self-check plan quality (max 3 iterations)
-5. **Write** - Save to `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
-6. **Next** - Offer: Review (recommended) / Execute / Refine
+2. **Research** - Parallel research via `asd-repo-researcher` + `asd-learnings-researcher` + `asd-docs-researcher`
+3. **Plan** - Strategic overview + sequential bite-sized TDD tasks
+4. **Validate + Write** - Agent validation via `asd-plan-validator`, save to `docs/asd/plans/`
+5. **Next** - Offer: Review (recommended) / Execute / Refine
 
 ## Feature Description
 

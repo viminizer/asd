@@ -1,11 +1,11 @@
 ---
 name: planning
-description: "Create implementation plans with research, dependency analysis, and bite-sized TDD tasks. Use when converting feature descriptions or brainstorm output into actionable plans."
+description: "Create implementation plans with research and bite-sized TDD tasks. Use when converting feature descriptions or brainstorm output into actionable plans."
 ---
 
 # Planning
 
-Create validated implementation plans from ideas or brainstorm output. Plans combine strategic context with bite-sized TDD tasks grouped by dependency order.
+Create validated implementation plans from ideas or brainstorm output. Plans combine strategic context with bite-sized TDD tasks in sequential order.
 
 ## When to Use
 
@@ -30,27 +30,12 @@ Otherwise, ask questions one at a time via AskUserQuestion:
 
 ## Phase 2: Research (Parallel)
 
-### 2a. Local Research (always runs)
-
-Launch both agents in parallel:
+Launch all three research agents in parallel:
 - Task asd-repo-researcher(feature_description)
 - Task asd-learnings-researcher(feature_description)
+- Task asd-docs-researcher(feature_description)
 
-### 2b. Research Decision
-
-Based on signals from Phase 1 and findings from Phase 2a:
-
-**Always research externally:** Security, payments, external APIs, data privacy.
-**Skip external research:** Strong local patterns exist, user knows what they want.
-**Research if uncertain:** New technology, no codebase examples, open-ended approach.
-
-Announce the decision briefly and proceed.
-
-### 2c. External Research (conditional)
-
-If external research warranted, use:
-- WebSearch for best practices and current patterns
-- Context7 MCP for framework-specific documentation and code examples
+Wait for all agents to return. Synthesize findings into a unified research context for plan generation.
 
 ## Phase 3: Plan Generation
 
@@ -58,7 +43,7 @@ If external research warranted, use:
 
 Read the plan template for structure reference:
 ```
-Read @asd/templates/plan.md
+Read templates/plan.md
 ```
 
 ### 3b. Scale to Scope
@@ -73,34 +58,9 @@ Generate the plan header sections per template:
 - Technical considerations (if scope warrants)
 - Alternative approaches, system-wide impact (for large changes)
 
-### 3d. Dependency Analysis
+### 3d. Write Bite-Sized Tasks
 
-For each planned task, determine:
-- Direct dependencies (what must complete first)
-- Whether it mutates: database schema, shared APIs/DTOs, core domain models
-- Whether it introduces foundational infrastructure
-- Whether it can execute in parallel with other tasks
-
-No circular dependencies allowed.
-
-### 3e. Group Construction
-
-**Isolate a task in its own group if it:**
-- Modifies database schema or shared contracts
-- Introduces foundational layers
-- Is depended upon by other tasks
-- Requires heavy reasoning or possible compaction
-
-**Tasks may share a group only if:**
-- No direct or indirect dependency between them
-- No shared schema or contract mutation
-- They depend only on already-completed groups
-
-If unsure → isolate.
-
-### 3f. Write Bite-Sized Tasks
-
-For each task within each group, follow this TDD format:
+Write tasks in sequential order (foundational work first, then features that build on it). Follow this TDD format:
 
 ```
 ### Task N: [Name]
@@ -123,31 +83,27 @@ For each task within each group, follow this TDD format:
 - Assume the engineer has zero codebase context
 - Include expected output for verification commands
 
-### 3g. Write Footer Sections
+### 3e. Write Footer Sections
 
 - Acceptance criteria (testable, specific)
-- Execution contract (for large changes: commit strategy, group protocol, clean context rule)
 - Risks and dependencies
 
-**Planning does NOT create branches.** Document branch strategy in the execution contract for `/asd:execute` to follow.
+## Phase 4: Validate, Write, and Next Steps
 
-## Phase 4: Validation
+### 4a. Self-Check
 
-Self-check before writing. Max 3 fix iterations.
+Run the validation checklist. Max 2 fix iterations.
 
 - [ ] Title is descriptive and searchable
 - [ ] All acceptance criteria are testable (not vague)
-- [ ] Dependencies are explicit, no circular dependencies
-- [ ] Group isolation rules applied (schema/contract changes isolated)
+- [ ] Tasks are in logical sequential order (foundational work first)
 - [ ] Files to modify are identified with exact paths
 - [ ] Risks are documented
 - [ ] Brainstorm cross-check passed (if brainstorm exists: every key decision reflected)
 
-If validation fails: fix issues, re-validate. After 3 failures, write plan with warnings.
+If validation fails: fix issues, re-validate. After 2 failures, write plan with warnings.
 
-## Phase 5: Write and Offer Next Steps
-
-### 5a. Write Plan
+### 4b. Write Plan
 
 ```bash
 mkdir -p docs/asd/plans/
@@ -161,7 +117,16 @@ Filename rules:
 - Kebab-case, 3-5 descriptive words
 - End with `-plan.md`
 
-### 5b. Next Steps
+### 4c. Agent Validation
+
+Dispatch the plan validator on the written plan:
+- Task asd-plan-validator(plan_file_content)
+
+If validator returns issues:
+- Fix critical issues inline (max 2 iterations)
+- Warnings are noted but don't block
+
+### 4d. Next Steps
 
 Use AskUserQuestion to present options:
 
