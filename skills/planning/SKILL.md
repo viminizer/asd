@@ -165,9 +165,9 @@ Filename rules:
 
 Use AskUserQuestion to present options:
 
-1. **Execute** → `/asd:execute docs/asd/plans/<filename>`
-2. **Refine** → Improve specific sections
-3. **Deepen** → Add more research to specific areas
+1. **Review** (Recommended) → `/asd:technical_review docs/asd/plans/<filename>`
+2. **Execute** → `/asd:execute docs/asd/plans/<filename>`
+3. **Refine** → Improve specific sections
 
 ## Key Principles
 

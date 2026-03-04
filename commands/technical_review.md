@@ -1,43 +1,25 @@
 ---
 name: asd:technical_review
-description: "Get technical feedback on plans from code-focused reviewers."
+description: "Review implementation plans for quality, technical soundness, and feasibility before execution."
 argument-hint: "[plan file path]"
 ---
 
 # /asd:technical_review
 
-Get technical feedback on implementation plans from multiple reviewers.
+Review an implementation plan before executing it. Checks document quality, technical soundness, and implementation feasibility.
 
-## Usage
+## What it does
 
-```
-/asd:technical_review [plan file path]
-```
-
-## What It Does
-
-1. Read the plan file
-2. Run multiple review agents in parallel:
-   - Architecture reviewer
-   - Security reviewer
-   - Performance reviewer
-   - Code simplicity reviewer
-3. Synthesize feedback
-4. Present issues by severity
-
-## When to Use
-
-- After `/asd:plan` creates a plan
-- Before `/asd:execute`
-- When you want expert feedback on the approach
+1. **Plan quality** - Clarity, completeness, specificity, YAGNI, unstated assumptions
+2. **Technical soundness** - Dispatch `asd-code-reviewer` on the plan's approach
+3. **Implementation feasibility** - Task ordering, dependencies, file paths, realistic scope
+4. **Learnings check** - Cross-reference past solutions if `docs/asd/solutions/` exists
+5. **Report** - Issues by severity, then offer next steps
 
 ## Output
 
-Technical review report with:
-- Critical issues (must fix)
-- Warnings (should fix)
-- Suggestions (consider)
+Review report with issues grouped by severity (critical, warning, suggestion), then:
 
-## Next Step
-
-After review → `/asd:execute` (if no critical issues)
+- **Critical issues found** - fix plan, re-review
+- **Warnings only** - fix or proceed to `/asd:execute`
+- **Clean** - proceed to `/asd:execute`

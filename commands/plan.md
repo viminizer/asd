@@ -15,7 +15,7 @@ Transform feature descriptions into validated implementation plans.
 3. **Plan** - Strategic overview + dependency-ordered groups with bite-sized TDD tasks
 4. **Validate** - Self-check plan quality (max 3 iterations)
 5. **Write** - Save to `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
-6. **Next** - Offer: Execute / Refine / Deepen
+6. **Next** - Offer: Review (recommended) / Execute / Refine
 
 ## Feature Description
 
@@ -33,4 +33,4 @@ Plan at `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
 
 ## Next Step
 
-After plan is written → `/asd:execute`
+After plan is written → `/asd:technical_review` (recommended) or `/asd:execute`
