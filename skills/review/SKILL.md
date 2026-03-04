@@ -24,19 +24,30 @@ Review code changes by dispatching the `asd-code-reviewer` agent in diff mode.
 
 If the base branch is ambiguous, ask the user.
 
-## Phase 2: Review
+## Phase 2: Pre-filter
 
-Dispatch the `asd-code-reviewer` agent in diff mode:
+Dispatch the `asd-diff-analyzer` agent (haiku) to classify changes:
+
+```
+[Diff content or branch range]
+
+Summarize changes and recommend which review passes to run.
+```
+
+## Phase 3: Review
+
+Dispatch the `asd-code-reviewer` agent in diff mode, passing the diff-analyzer's recommendations:
 
 ```
 Review scope: diff review
 
 [Diff content or branch range]
 
-Run all relevant passes. Skip passes that don't apply.
+Recommended passes from diff analysis: [passes from Phase 2]
+Skip passes marked as not needed.
 ```
 
-## Phase 3: Next steps
+## Phase 4: Next steps
 
 Based on findings, use AskUserQuestion:
 

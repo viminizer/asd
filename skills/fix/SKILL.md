@@ -58,7 +58,7 @@ Apply a single, targeted fix:
 ### 2c. Verify
 
 - Run the new test - should pass
-- Run the full test suite - no regressions
+- Dispatch the `asd-test-runner` agent (haiku) to run the full test suite - no regressions
 - If no test suite exists, manually verify the fix
 
 ## Phase 3: Review

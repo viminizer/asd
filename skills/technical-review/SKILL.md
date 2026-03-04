@@ -61,13 +61,13 @@ Skip passes that don't apply based on plan content.
 
 ### Phase 4: Implementation feasibility
 
-Check the plan as a set of executable tasks:
+Dispatch the `asd-plan-validator` agent (haiku) to check structure and feasibility:
 
-- **Task ordering** - Are dependencies correct? Would any task fail because a prerequisite isn't done yet?
-- **File paths** - Do referenced files exist? Are create vs modify designations correct?
-- **Scope per task** - Is any single task too large? Could it be split?
-- **Test strategy** - Does each task have a clear verification step?
-- **Missing tasks** - Are there implicit steps not captured (migrations, config changes, dependency installs)?
+```
+[Full plan content]
+
+Validate task ordering, file paths, scope per task, and completeness.
+```
 
 ### Phase 5: Learnings check (conditional)
 

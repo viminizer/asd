@@ -15,14 +15,15 @@ Review an existing feature's full implementation across backend and frontend.
 
 ## Phase 1: Identify scope
 
-Use Glob and Grep to find all files related to the feature:
-- Models, controllers, services (backend)
-- Components, views, styles (frontend)
-- Tests, fixtures, factories
-- Migrations, configuration
-- API endpoints, routes
+Dispatch the `asd-file-scoper` agent (haiku) to find all related files:
 
-Present the file list to the user and ask: "These are the files I found for this feature. Anything missing or anything I should exclude?"
+```
+Feature: [feature description from user]
+
+Find all files related to this feature across backend and frontend.
+```
+
+Present the returned file list to the user and ask: "These are the files I found for this feature. Anything missing or anything I should exclude?"
 
 ## Phase 2: Review
 

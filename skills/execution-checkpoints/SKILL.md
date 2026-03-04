@@ -96,7 +96,7 @@ Only proceed when both reviews pass. Mark the TodoWrite task as completed.
 
 After all tasks complete:
 
-1. Run the project's test suite (check CLAUDE.md or package.json for the test command)
+1. Dispatch the `asd-test-runner` agent (haiku) to run the full test suite
 2. If no test suite exists, verify manually by running the changed code paths
 3. Verify acceptance criteria from the plan
 4. Check for regressions
