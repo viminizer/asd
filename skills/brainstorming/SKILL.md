@@ -84,14 +84,12 @@ Ask questions **one at a time** to understand the user's intent.
 
 ### Phase 3: Propose Approaches
 
-Present 2-3 concrete approaches.
+Dispatch the `asd-approach-proposer` agent with:
+- Feature description
+- User requirements and decisions from Phase 2
+- Codebase research findings from Phase 1
 
-For each approach: brief description (2-3 sentences), pros, cons, and when it's best suited.
-
-- Lead with your recommendation and explain why
-- Be honest about trade-offs
-- Apply YAGNI - simpler is usually better
-- Reference codebase patterns when relevant
+The agent returns 2-3 approaches with trade-offs and a recommendation. Present the results to the user and ask which approach they prefer.
 
 ### Phase 4: Present Design
 

@@ -57,16 +57,14 @@ Use the **AskUserQuestion tool** to ask questions **one at a time**.
 
 ### Phase 3: Explore Approaches
 
-Propose **2-3 concrete approaches** based on research and conversation.
+Dispatch the `asd-approach-proposer` agent with:
+- Feature description
+- User requirements and decisions from Phase 2
+- Codebase research findings from Phase 1
 
-For each approach, provide:
-- Brief description (2-3 sentences)
-- Pros and cons
-- When it's best suited
+The agent analyzes trade-offs and returns 2-3 concrete approaches with a recommendation.
 
-Lead with your recommendation and explain why. Apply YAGNI — prefer simpler solutions.
-
-Use **AskUserQuestion tool** to ask which approach the user prefers.
+Present the agent's approaches to the user and use **AskUserQuestion tool** to ask which approach they prefer.
 
 ### Phase 4: Present and Validate Design
 
