@@ -1,11 +1,11 @@
 ---
 name: java-spring-boot
-description: "Spring Boot conventions and best practices. Auto-loads when working in Java/Spring Boot projects. Provides reference knowledge for Java-specialized agents and direct coding."
+description: "Spring Boot conventions and best practices. Load only when actively writing, reviewing, or debugging Java/Spring Boot code and domain-specific guidance would materially help. Not needed for simple edits or non-code tasks."
 ---
 
 # Spring Boot best practices
 
-Reference knowledge for writing idiomatic Spring Boot applications. This skill auto-loads in Java/Spring Boot projects and informs the specialized Java agents (`asd-java-reviewer`, `asd-java-investigator`, `asd-java-plan-writer`).
+Reference knowledge for writing idiomatic Spring Boot applications. This skill provides reference knowledge for the specialized Java agents (`asd-java-reviewer`, `asd-java-investigator`, `asd-java-plan-writer`).
 
 ## Project structure
 
