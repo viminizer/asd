@@ -13,13 +13,10 @@ Execute implementation plans using subagent-driven development. Each task gets a
 1. **Load plan** - Read plan file, identify tasks and dependencies
 2. **Setup branch** - Create feature branch from current HEAD
 3. **Per task** - Dispatch subagent to implement, then spec review, then code quality review
-4. **Finish** - Verify all tests pass, then present merge/PR options
+4. **Full review** - Review entire branch diff, fix any issues found
+5. **Finish** - Present merge/PR options
 
 ## Output
 
 - Feature branch with incremental commits per task
-- All tasks verified by spec + code quality review
-
-## Next Step
-
-After execution → `/asd:review`
+- All tasks verified by per-task reviews + full branch review

@@ -59,41 +59,31 @@ You are implementing task N of a plan.
 - If you hit a blocker, report it clearly and stop
 ```
 
-#### 3b. Dispatch spec reviewer
+#### 3b. Dispatch spec review
 
-After the implementation subagent completes, dispatch a reviewer subagent:
+After the implementation subagent completes, dispatch the `asd-code-reviewer` agent:
 
 ```
-Review the changes for task N against this specification:
+Review scope: task-level
 
+Specification:
 [Full task text from plan]
 
-Check:
-- Does the implementation match what the plan specified?
-- Are all acceptance criteria met?
-- Are all files created/modified as specified?
-
-Report: PASS or list specific issues.
+Check spec compliance for task N. Report PASS or list issues.
 ```
 
 **If spec review fails:** Resume the implementation subagent using the Agent tool's `resume` parameter with its agent ID. Provide the specific issues to fix. After fixes, re-review. Repeat until PASS.
 
-#### 3c. Dispatch code quality reviewer
+#### 3c. Dispatch code quality review
 
-Only after spec review passes, dispatch a code quality reviewer:
+Only after spec review passes, dispatch `asd-code-reviewer` again:
 
 ```
-Review the changes for task N for code quality.
+Review scope: task-level
 
 Run: git diff feat/<plan-name>~1..HEAD
 
-Check:
-- Code clarity and readability
-- Error handling
-- Test coverage and quality
-- Follows existing codebase patterns
-
-Report: PASS or list specific issues.
+Check code quality only (spec already passed). Report PASS or list issues.
 ```
 
 **If code review fails:** Resume the implementation subagent (same `resume` parameter) to fix issues. Re-review. Repeat until PASS.
@@ -111,7 +101,22 @@ After all tasks complete:
 3. Verify acceptance criteria from the plan
 4. Check for regressions
 
-## Phase 5: Finish
+## Phase 5: Full branch review
+
+After all tasks pass and tests are green, dispatch the `asd-code-reviewer` agent on the entire branch:
+
+```
+Review scope: branch-level
+
+Run: git diff main..HEAD (or the base branch)
+
+Focus on cross-task integration issues only. Per-task reviews already passed.
+Report PASS or list issues.
+```
+
+**If review finds critical or warning issues:** Dispatch a fix subagent to address them. Re-run tests. Re-review. Repeat until PASS.
+
+## Phase 6: Finish
 
 Follow the `finishing-a-development-branch` process to present options:
 
