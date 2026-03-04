@@ -23,6 +23,8 @@ Before dispatching agents, detect the project language from file extensions, bui
 - **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-*` agents
 - **Other or mixed:** use generic `asd-*` agents
 
+Agents run in clean contexts and cannot see skills. When dispatching specialized agents, include only the specific skill conventions relevant to the bug (e.g. transaction patterns for a JPA issue, React lifecycle rules for a stale closure bug). Do not pass the entire skill - just the parts that help the agent do its job.
+
 ## Phase 1: Investigate
 
 ### Simple bugs (root cause is obvious from the error)

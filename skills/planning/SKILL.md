@@ -20,6 +20,8 @@ Before dispatching agents, detect the project language from file extensions and 
 - **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-*` agents
 - **Other or mixed:** use generic `asd-*` agents
 
+Agents run in clean contexts and cannot see skills. When dispatching specialized agents, include only the specific skill conventions relevant to the feature (e.g. testing patterns for a new endpoint, module system rules for a new package). Do not pass the entire skill - just the parts that help the agent do its job.
+
 ## Phase 1: Input Resolution
 
 ### 1a. Check for Brainstorm Context

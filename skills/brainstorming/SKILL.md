@@ -88,6 +88,7 @@ Dispatch the `asd-approach-proposer` agent with:
 - Feature description
 - User requirements and decisions from Phase 2
 - Codebase research findings from Phase 1
+- Only the specific language skill conventions relevant to the feature being brainstormed (agents cannot see skills - pass only what helps, not the entire skill)
 
 The agent returns 2-3 approaches with trade-offs and a recommendation. Present the results to the user and ask which approach they prefer.
 
