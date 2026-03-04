@@ -6,7 +6,7 @@ topic: <kebab-case-topic>
 # <Topic Title>
 
 ## What We're Building
-[Concise description—1-2 paragraphs max]
+[Concise description — 1-2 paragraphs max]
 
 ## Why This Approach
 [Brief explanation of approaches considered and why this one was chosen]
@@ -23,7 +23,7 @@ topic: <kebab-case-topic>
 
 ---
 
-### Alternative Approaches
+## Alternative Approaches Considered
 
 ### Approach A: [Name]
 

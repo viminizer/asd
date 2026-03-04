@@ -1,263 +1,199 @@
 ---
 name: planning
-description: "Use when creating implementation plans from feature descriptions or brainstorm output. Transforms ideas into structured, validated plans with appropriate detail levels."
+description: "Create implementation plans with research, dependency analysis, and bite-sized TDD tasks. Use when converting feature descriptions or brainstorm output into actionable plans."
 ---
 
 # Planning
 
-Create implementation plans from ideas or brainstorm output.
+Create validated implementation plans from ideas or brainstorm output. Plans combine strategic context with bite-sized TDD tasks grouped by dependency order.
 
 ## When to Use
 
-- User provides feature description
+- User provides a feature description
 - After `/asd:brainstorm` completes
 - When converting requirements to actionable plans
 
-## Process
+Announce: "Using the planning skill to create the implementation plan."
 
-### Phase 1: Check for Brainstorm
+## Phase 1: Input Resolution
 
-**Always check first:**
+### 1a. Check for Brainstorm
+
+Look for recent brainstorm documents matching the feature:
 
 ```bash
 ls -la docs/brainstorms/*.md 2>/dev/null | head -5
 ```
 
-**If brainstorm exists (within 14 days):**
-1. Read the brainstorm doc thoroughly
+**If brainstorm found (within 14 days, topic matches):**
+1. Read the brainstorm thoroughly
 2. Extract: key decisions, approach, constraints, open questions
-3. Use as primary input
-4. Skip idea refinement
+3. Announce: "Found brainstorm from [date]: [topic]. Using as foundation."
+4. Skip idea refinement (Phase 1b)
 
-**If no brainstorm → Phase 2.**
+**If no brainstorm found** → Phase 1b.
 
-### Phase 2: Idea Refinement (if no brainstorm)
+### 1b. Idea Refinement (if no brainstorm)
 
-Ask questions one at a time:
+Ask questions one at a time via AskUserQuestion:
 - What problem does this solve?
-- Who are the users?
 - Any constraints or dependencies?
 - How will you measure success?
 
-### Phase 3: Local Research
+Note signals for research decision: user familiarity, topic risk, uncertainty level.
 
-Run in parallel:
-- Check CLAUDE.md for project conventions
-- Look for existing patterns in codebase
-- Check `docs/solutions/` for relevant learnings
+**Skip if:** Feature description is already detailed. Offer: "Description is clear. Proceed with research?"
 
-### Phase 4: External Research (if needed)
+## Phase 2: Research (Parallel)
 
-**Research if:**
-- Security, payments, external APIs
-- Unfamiliar technology
-- No codebase patterns exist
+### 2a. Local Research (always runs)
 
-**Skip if:**
-- Clear codebase patterns exist
-- User knows exactly what they want
+Launch both agents in parallel:
+- Task asd-repo-researcher(feature_description)
+- Task asd-learnings-researcher(feature_description)
 
-### Phase 5: Generate Plan
+### 2b. Research Decision
 
-Create plan with appropriate detail level:
+Based on signals from Phase 1 and findings from Phase 2a:
 
-#### MINIMAL
-```markdown
----
-title: <title>
-type: feat|fix|refactor
-status: active
-date: YYYY-MM-DD
----
+**Always research externally:** Security, payments, external APIs, data privacy.
+**Skip external research:** Strong local patterns exist, user knows what they want.
+**Research if uncertain:** New technology, no codebase examples, open-ended approach.
 
-# <Title>
+Announce the decision briefly and proceed.
 
-## Problem
-[What we're solving]
+### 2c. External Research (conditional)
 
-## Acceptance Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
+If external research warranted, use:
+- WebSearch for best practices and current patterns
+- Context7 MCP for framework-specific documentation and code examples
 
-## Context
-[Any critical info]
+## Phase 3: Plan Generation
+
+### 3a. Load Template
+
+Read the plan template for structure reference:
+```
+Read @asd/templates/plan.md
 ```
 
-#### STANDARD
-```markdown
----
-title: <title>
-type: feat|fix|refactor
-status: active
-date: YYYY-MM-DD
-origin: docs/brainstorms/YYYY-MM-DD-<topic>-brainstorm.md
----
+### 3b. Auto-Detect Detail Level
 
-# <Title>
+Select based on scope (user can override with `--level` flag):
+- **MINIMAL:** 1-2 files, single concern (bugs, small fixes)
+- **STANDARD:** 3-10 files, multiple concerns (most features)
+- **COMPREHENSIVE:** 10+ files, architectural change (major features)
 
-## Overview
-[Description]
+### 3c. Write Strategic Sections
 
-## Problem Statement
-[Why this matters]
+Generate the plan header sections per template:
+- Frontmatter (title, type, status, date, origin if brainstorm)
+- Problem statement, proposed solution
+- Technical considerations (STANDARD+)
+- Alternative approaches, system-wide impact (COMPREHENSIVE)
 
-## Proposed Solution
-[High-level approach]
+### 3d. Dependency Analysis (STANDARD+ mandatory)
 
-## Technical Considerations
-- Architecture impacts
-- Performance implications
-
-## Acceptance Criteria
-- [ ] Functional requirement 1
-- [ ] Functional requirement 2
-
-## Dependencies & Risks
-[What could block this]
-```
-
-#### COMPREHENSIVE
-Includes: detailed implementation phases, alternative approaches, system-wide impact analysis, integration test scenarios.
-
-### Phase 5.5: Dependency Analysis (Mandatory)
-
-For each task/phase in the plan, explicitly determine:
-
-- **Direct dependencies** - What must complete first
-- **Indirect dependencies** - What affects indirectly
-- **Whether it mutates:**
-  - Database schema
-  - Shared APIs / DTOs
-  - Core domain models
-  - Cross-cutting concerns
-- **Whether it introduces foundational infrastructure**
-- **Whether it can execute in parallel** with other tasks
+For each planned task, determine:
+- Direct dependencies (what must complete first)
+- Whether it mutates: database schema, shared APIs/DTOs, core domain models
+- Whether it introduces foundational infrastructure
+- Whether it can execute in parallel with other tasks
 
 No circular dependencies allowed.
 
-### Phase 5.6: Group Construction
+### 3e. Group Construction (STANDARD+ mandatory)
 
-**A task MUST be isolated in its own group if it:**
-
-- Modifies database schema
-- Changes shared contracts (API, DTO, domain core)
+**Isolate a task in its own group if it:**
+- Modifies database schema or shared contracts
 - Introduces foundational layers
-- Is internally depended upon by another task
-- Restructures core logic
+- Is depended upon by other tasks
 - Requires heavy reasoning or possible compaction
 
-**Tasks MAY share a group ONLY if:**
-
-- No direct dependency between them
-- No indirect dependency between them
+**Tasks may share a group only if:**
+- No direct or indirect dependency between them
 - No shared schema or contract mutation
 - They depend only on already-completed groups
-- They could be implemented safely in parallel
 
-If unsure → isolate. Dependency order overrides size.
+If unsure → isolate.
 
-### Phase 5.7: Execution Contract
+### 3f. Write Bite-Sized Tasks
 
-Include this section in the generated plan:
+For each task within each group, follow superpowers TDD format:
 
-```markdown
-## Execution Contract
+```
+### Task N: [Name]
 
-### Branch Strategy
+**Files:**
+- Create: exact/path/to/file.ext
+- Modify: exact/path/to/existing.ext
+- Test: tests/exact/path/to/test.ext
 
-Before starting Group 1:
-
-git checkout develop
-git pull
-git checkout -b feat/<FEATURE_NAME>
-
-All groups continue on the same branch.
-
-### Commit Strategy
-
-Within each group, commit per logical unit:
-
-- migration
-- entity
-- repository
-- service
-- controller
-- test class
-
-Rules:
-
-- Code compiles
-- Full test suite passes
-- No disabled tests
-- No partial implementations
-- Do not bundle an entire group into one commit
-
-Use conventional commits:
-feat(scope): add X
-refactor(scope): adjust Y
-fix(scope): correct Z
-test(scope): add coverage
-
-### Group Completion Protocol
-
-After completing a group:
-
-1. Run tests
-2. Verify:
-   - All tests pass (full suite)
-   - No uncommitted changes
-   - Acceptance criteria completed
-3. Commit all changes
-4. Clear context: /clear
-5. Start next group: /asd:execute <PLAN_FILE> group <NEXT_GROUP_ID>
-
-### Clean Context Rule
-
-A clean context is mandatory:
-- Between groups
-- After schema or contract mutations
-- After structural phases
-- If compaction occurred
+**Step 1: Write failing test** [exact test code]
+**Step 2: Run test (expect fail)** [exact command + expected error]
+**Step 3: Implement** [exact implementation code]
+**Step 4: Verify** [exact command + expected PASS]
+**Step 5: Commit** [exact commit command]
 ```
 
-### Phase 6: VALIDATE PLAN
+**Task rules:**
+- Each task is one action (2-5 minutes)
+- Include exact file paths, exact code, exact commands
+- Assume the engineer has zero codebase context
+- Include expected output for verification commands
 
-**Before finalizing, run validation checklist:**
+### 3g. Write Footer Sections
+
+- Acceptance criteria (testable, specific)
+- Execution contract (COMPREHENSIVE: commit strategy, group protocol, clean context rule)
+- Risks and dependencies
+
+**Planning does NOT create branches.** Document branch strategy in the execution contract for `/asd:execute` to follow.
+
+## Phase 4: Validation
+
+Self-check before writing. Max 3 fix iterations.
 
 - [ ] Title is descriptive and searchable
 - [ ] All acceptance criteria are testable (not vague)
-- [ ] Dependencies are identified
-- [ ] No scope creep (边界清晰)
-- [ ] Technical approach is feasible
-- [ ] Files to modify are identified
+- [ ] Dependencies are explicit, no circular dependencies
+- [ ] Group isolation rules applied (schema/contract changes isolated)
+- [ ] Files to modify are identified with exact paths
 - [ ] Risks are documented
-- [ ] **Dependency graph is explicit** - Each task's dependencies are listed
-- [ ] **Group isolation rules applied** - Schema/contract changes isolated
-- [ ] **Execution contract included** - Branch strategy, commit rules, completion protocol
-- [ ] **No circular dependencies**
+- [ ] Brainstorm cross-check passed (if brainstorm exists: every key decision reflected)
 
-**If validation fails:**
-- Fix issues
-- Re-validate
-- Max 3 iterations
+If validation fails: fix issues, re-validate. After 3 failures, write plan with warnings.
 
-### Phase 7: Write Plan
+## Phase 5: Write and Offer Next Steps
 
-Save to `docs/asd/plans/YYYY-MM-DD-<name>-plan.md`
+### 5a. Write Plan
 
-### Phase 8: Offer Next Steps
+```bash
+mkdir -p docs/asd/plans/
+```
 
-1. Execute → `/asd:execute`
-2. Refine → Improve specific sections
-3. Deepen → More research
+Save to `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
 
-## Output Location
+Filename rules:
+- Date prefix required
+- Type prefix after date (feat, fix, refactor)
+- Kebab-case, 3-5 descriptive words
+- End with `-plan.md`
 
-`docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
+### 5b. Next Steps
+
+Use AskUserQuestion to present options:
+
+1. **Execute** → `/asd:execute docs/asd/plans/<filename>`
+2. **Refine** → Improve specific sections
+3. **Deepen** → Add more research to specific areas
+
+**Pipeline mode:** If invoked from an automated workflow with `disable-model-invocation`, skip AskUserQuestion. Write plan and return silently.
 
 ## Key Principles
 
-- **Validate before executing** - Plans must pass validation
-- **YAGNI** - Start simple, add complexity only if needed
+- **Validate before writing** - Plans must pass self-check
+- **YAGNI** - Start with MINIMAL, escalate only if scope demands it
 - **Testable criteria** - Every acceptance criterion must be verifiable
-- **Clear boundaries** - Know what's in scope and out of scope
+- **Zero-context tasks** - Engineer needs no prior codebase knowledge
+- **DRY** - No duplicate information across plan sections

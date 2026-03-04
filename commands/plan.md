@@ -1,40 +1,54 @@
 ---
 name: asd:plan
-description: "Transform ideas into structured implementation plans. Supports detail levels and includes plan validation."
-argument-hint: "[feature description or topic]"
+description: "Create implementation plans with research, dependency analysis, and bite-sized TDD tasks."
+argument-hint: "[feature description] [--level minimal|standard|comprehensive]"
 ---
 
 # /asd:plan
 
-Create implementation plans from feature descriptions.
+Transform feature descriptions into validated implementation plans.
 
 ## Usage
 
 ```
-/asd:plan [feature description]
+/asd:plan add user authentication with JWT
+/asd:plan --level comprehensive redesign the payment system
+/asd:plan fix the race condition in checkout
 ```
 
 ## What It Does
 
-1. Check for brainstorm output (`docs/asd/design/`)
-2. Local research (repo patterns, learnings)
-3. Optional external research
-4. Generate plan with 3 detail levels
-5. **Validate plan** before completion
-6. Save to `docs/asd/plans/`
+1. **Input** - Check for brainstorm output, or refine idea with user
+2. **Research** - Parallel local research (codebase patterns + past learnings). External research if high-risk.
+3. **Plan** - Generate hybrid plan: strategic overview + dependency-ordered groups with bite-sized TDD tasks
+4. **Validate** - Self-check plan quality (max 3 iterations)
+5. **Write** - Save to `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
+6. **Next** - Offer: Execute / Refine / Deepen
+
+## Feature Description
+
+<feature_description> #$ARGUMENTS </feature_description>
+
+**If empty, ask:** "What would you like to plan?"
+
+## Execution
+
+Invoke the `planning` skill and follow it exactly.
 
 ## Detail Levels
 
-| Level | Best For |
-|-------|----------|
-| MINIMAL | Simple bugs, small improvements |
-| STANDARD | Most features, complex bugs |
-| COMPREHENSIVE | Major features, architectural changes |
+| Level | Scope | Output |
+|-------|-------|--------|
+| MINIMAL | 1-2 files | Problem + tasks + criteria |
+| STANDARD | 3-10 files | + groups, dependencies, risks |
+| COMPREHENSIVE | 10+ files | + impact analysis, execution contract, alternatives |
+
+Auto-detected from scope. Override with `--level`.
 
 ## Output
 
-Plan at `docs/asd/plans/YYYY-MM-DD-<name>-plan.md`
+Plan at `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
 
 ## Next Step
 
-After validation passes → `/asd:execute`
+After plan is written → `/asd:execute`
