@@ -11,15 +11,18 @@
   "plugins": [
     {
       "name": "asd",
-      "description": "Accelerated Software Development - Workflow with brainstorming, planning, technical review, subagent-driven execution, code review, feature review, knowledge capture, bug fix, TDD, QA dogfood, and cleanup. 10 commands, 12 skills, 7 agents, 4 templates.",
-      "version": "0.9.0",
+      "description": "Accelerated Software Development - Workflow with brainstorming, planning, technical review, subagent-driven execution, code review, feature review, knowledge capture, bug fix, TDD, QA dogfood, and cleanup. 10 commands, 12 skills, 9 agents, 4 templates.",
+      "version": "1.0.0",
       "author": {
         "name": "Viminizer",
         "url": "https://github.com/viminizer"
       },
       "homepage": "https://github.com/viminizer/asd",
       "tags": ["asd", "workflow", "planning", "execution", "code-review", "knowledge-management"],
-      "source": "."
+      "source": {
+        "source": "url",
+        "url": "https://github.com/viminizer/asd.git"
+      }
     }
   ]
 }
