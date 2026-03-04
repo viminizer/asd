@@ -15,7 +15,6 @@ No fixes without root cause investigation first.
 
 - User reports a bug or unexpected behavior
 - Error messages or failing tests need investigation
-- After `/asd:fix` is invoked
 
 ## Phase 1: Investigate
 
@@ -69,9 +68,8 @@ Dispatch the `asd-code-reviewer` agent on the fix:
 ```
 Review scope: bug fix
 
-Run: git diff HEAD
-
-Review this bug fix for correctness and regressions.
+Review the changes made in this fix for correctness and regressions.
+Check the unstaged/staged diff, or if already committed, diff against the previous commit.
 ```
 
 If issues found, fix them and re-review.

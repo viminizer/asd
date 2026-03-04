@@ -21,7 +21,15 @@ Fix a bug by finding the root cause first, then applying a targeted fix with tes
 3. **Review** - Dispatch `asd-code-reviewer` on the diff
 4. **Commit** - If review passes
 
+## Execution
+
+Invoke the `fix` skill and follow it exactly.
+
 ## Output
 
 - Bug fix with test coverage on current branch
 - Review-verified commit
+
+## Next step
+
+After fix → `/asd:review` if part of a larger change, or `/asd:capture` to document the solution
