@@ -8,17 +8,15 @@ argument-hint: "[target URL]"
 
 Explore a web application systematically and document issues.
 
-## Usage
+## Target
 
-```
-/asd:dogfood [target URL]
-```
+<target_url> #$ARGUMENTS </target_url>
 
-## Prerequisites
+**If empty, ask:** "What URL should I test?"
 
-- `agent-browser` tool must be installed
+**Prerequisite:** `agent-browser` tool must be installed.
 
-## What It Does
+## What it does
 
 1. **Setup** - Initialize session, create output directory
 2. **Authenticate** - Sign in if needed (ask user for credentials)
@@ -26,13 +24,10 @@ Explore a web application systematically and document issues.
 4. **Document** - Describe each issue with detailed steps
 5. **Report** - Summarize all findings
 
+## Execution
+
+Invoke the `dogfood` skill and follow it exactly.
+
 ## Output
 
 Report at `./dogfood-output/report.md`
-
-## Example
-
-```
-/asd:dogfood vercel.com
-/asd:dogfood http://localhost:3000
-```

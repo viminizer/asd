@@ -1,76 +1,44 @@
 ---
 name: asd:cleanup
-description: "Archive old brainstorms and todos by merging into monthly files."
+description: "Archive completed plans and old reviews into monthly files."
 ---
 
 # /asd:cleanup
 
-Archive old brainstorms and todos into monthly files.
+Archive completed work into monthly files. Solutions are permanent knowledge and are never archived.
 
-## What It Does
+## What it does
 
-1. **Archive brainstorms** - `docs/brainstorms/*.md` → `docs/archives/brainstorms/YYYY-MM.md`
-2. **Archive todos** - `todos/*.md` → `docs/archives/todos/YYYY-MM.md`
+1. **Archive completed plans** - `docs/asd/plans/` with `status: complete` → `docs/asd/archives/plans/YYYY-MM.md`
+2. **Archive old reviews** - `docs/asd/reviews/` older than 30 days → `docs/asd/archives/reviews/YYYY-MM.md`
 
-**Does NOT archive:**
-- Plans in `docs/asd/plans/` - kept as-is
+**Never archives:**
+- `docs/asd/solutions/` - Permanent knowledge base
 
 ## Rules
 
-- Archives by **current month** (e.g., 2026-02)
-- If archive file exists for current month → **append** to it
-- If new month → **create** new file
-- Separator: `---` between entries
+- Group by month based on the document's date (from frontmatter)
+- If archive file exists for that month, append with `---` separator
+- If new month, create new file
+- Delete originals after successful archive
+- Confirm with user before deleting anything
 
 ## Process
 
-### 1. Archive Brainstorms
-
-```bash
-# Get current month
-MONTH=$(date +%Y-%m)
-
-# Create archive dir
-mkdir -p docs/archives/brainstorms
-
-# Check if archive exists for this month
-if [ -f "docs/archives/brainstorms/${MONTH}.md" ]; then
-    # Append new entries
-    for file in docs/brainstorms/*.md; do
-        echo "---" >> "docs/archives/brainstorms/${MONTH}.md"
-        echo "<!-- Source: $(basename $file) -->" >> "docs/archives/brainstorms/${MONTH}.md"
-        cat "$file" >> "docs/archives/brainstorms/${MONTH}.md"
-        rm "$file"
-    done
-else
-    # Create new archive
-    for file in docs/brainstorms/*.md; do
-        echo "---" >> "docs/archives/brainstorms/${MONTH}.md"
-        echo "<!-- Source: $(basename $file) -->" >> "docs/archives/brainstorms/${MONTH}.md"
-        cat "$file" >> "docs/archives/brainstorms/${MONTH}.md"
-        rm "$file"
-    done
-fi
-```
-
-### 2. Archive Todos
-
-Same logic for `todos/` → `docs/archives/todos/`
+1. Scan `docs/asd/plans/` for files with `status: complete` in frontmatter
+2. Scan `docs/asd/reviews/` for files older than 30 days
+3. Show what will be archived and ask for confirmation
+4. Create archive directories: `mkdir -p docs/asd/archives/plans docs/asd/archives/reviews`
+5. Append each file to the appropriate monthly archive
+6. Delete originals
+7. Report what was archived
 
 ## Output
 
 ```
-docs/archives/
-├── brainstorms/
-│   └── 2026-02.md    # All Feb brainstorms merged
-└── todos/
-    └── 2026-02.md    # All Feb todos merged
+docs/asd/archives/
+├── plans/
+│   └── 2026-02.md
+└── reviews/
+    └── 2026-02.md
 ```
-
-## Usage
-
-```
-/asd:cleanup
-```
-
-Run when you want to clean up old brainstorms and todos.

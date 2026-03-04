@@ -3,7 +3,7 @@ name: test-driven-development
 description: "Use when implementing features or bugfixes. Enforces RED-GREEN-REFACTOR cycle before writing implementation code."
 ---
 
-# Test-Driven Development (TDD)
+# Test-driven development
 
 Write tests first. Watch them fail. Write minimal code to pass.
 

@@ -15,8 +15,7 @@
 
 **Stats:**
 - [X] files created/modified
-- [Y] lines of code
-- [Z] days from start
+- [Y] commits
 
 **Git range:** `commit1` → `commit2`
 

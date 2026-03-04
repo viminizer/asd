@@ -1,95 +1,66 @@
 ---
 name: review
-description: "Use when reviewing code changes. Performs systematic analysis with multiple perspectives, prioritizes issues by severity."
+description: "Use when reviewing code changes (diffs, PRs, branches). Dispatches asd-code-reviewer in diff mode with severity-based reporting."
 ---
 
-# Code Review
+# Code review
 
-Perform systematic code review with severity prioritization.
+Review code changes by dispatching the `asd-code-reviewer` agent in diff mode.
 
-## When to Use
+## When to use
 
 - After `/asd:execute` completes
-- Before creating PR
+- Before creating or merging a PR
 - During PR review
 
-## Process
-
-### Phase 1: Determine Target
-
-Determine what to review:
+## Phase 1: Determine target
 
 | Input | Action |
 |-------|--------|
-| Empty | `git diff` on current branch |
-| Number | `gh pr view {n}` + checkout |
+| Empty | `git diff` on current branch against base |
+| Number | `gh pr view {n}` to get branch and diff |
 | Branch | `git diff main...{branch}` |
-| URL | Parse PR number, fetch |
+| URL | Parse PR number, then same as number |
 
-### Phase 2: Setup Environment
+If the base branch is ambiguous, ask the user.
 
-1. Ensure clean working directory
-2. Fetch latest changes
-3. Checkout target if needed
-4. Load project conventions (CLAUDE.md)
+## Phase 2: Review
 
-### Phase 3: Multi-Agent Analysis
-
-Run review agents in parallel:
-
-**Always run:**
-- Security review
-- Architecture review
-- Pattern consistency
-
-**Conditional:**
-- Database (if migrations)
-- Performance (if queries)
-- Security (if auth/payments)
-
-### Phase 4: Synthesize Findings
-
-Organize issues by severity:
-
-| Severity | Description | Action |
-|----------|-------------|--------|
-| CRITICAL | Security, data loss risk | Block merge |
-| WARNING | Bugs, regressions | Must fix |
-| SUGGESTION | Improvements | Consider |
-
-### Phase 5: Present Report
-
-Format:
+Dispatch the `asd-code-reviewer` agent in diff mode:
 
 ```
-## Review Summary
+Review scope: diff review
 
-### Critical Issues
-- [Issue 1]: Description + file:line
+[Diff content or branch range]
 
-### Warnings  
-- [Issue 1]: Description + file:line
-
-### Suggestions
-- [Issue 1]: Description (optional)
+Run all relevant passes. Skip passes that don't apply.
 ```
 
-### Phase 6: Offer Next Steps
+## Phase 3: Next steps
 
-1. Fix critical issues
-2. Address warnings
-3. Merge (if no critical)
-4. Request human review
+Based on findings, use AskUserQuestion:
 
-## Protected Artifacts
+- **Critical issues found:**
+  1. **Fix issues** → Address critical items, then re-review
+  2. **Request human review** → Flag for team member
+- **Warnings only:**
+  1. **Fix warnings** → Address items, then re-review
+  2. **Merge anyway** → Proceed with merge/PR
+  3. **Request human review** → Flag for team member
+- **Clean:**
+  1. **Merge/PR** → Proceed with integration
+  2. **Capture** → `/asd:capture` to document solutions
+
+## Protected artifacts
 
 Never flag for deletion:
-- `docs/asd/plans/*.md` - Plan files
-- `docs/asd/design/*.md` - Design docs
+- `docs/asd/plans/*.md`
+- `docs/asd/design/*.md`
+- `docs/asd/reviews/*.md`
 
-## Key Principles
+## Rules
 
-- **Severity first** - Focus on critical issues
-- **Be specific** - Include file:line references
-- **Provide solutions** - Don't just identify, suggest fixes
-- **Balance** - Don't block on style preferences
+- Delegate all review logic to `asd-code-reviewer` - don't duplicate its passes
+- Be specific: include file:line references
+- Don't block on style preferences
+- If the diff is too large (50+ files), ask the user to narrow the scope

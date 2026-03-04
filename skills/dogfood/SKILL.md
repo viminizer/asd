@@ -1,7 +1,6 @@
 ---
 name: dogfood
 description: "Use when testing or exploring a web application. Systematically explore pages, test features, and document issues with detailed descriptions."
-allowed-tools: Bash
 ---
 
 # Dogfood - Web Application QA

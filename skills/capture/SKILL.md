@@ -1,86 +1,57 @@
 ---
 name: capture
-description: "Use after completing work to document solutions. Captures problems and solutions for future reference."
+description: "Use after completing work to document solutions. Captures problems, root causes, and prevention strategies for future reference."
 ---
 
-# Knowledge Capture
+# Knowledge capture
 
 Document solved problems for team knowledge compounding.
 
-## When to Use
+## When to use
 
 - After `/asd:execute` and `/asd:review` complete
-- After fixing a bug
+- After fixing a bug with `/asd:fix`
 - After implementing a tricky feature
-- Before starting a new cycle
+- When a solution is worth remembering
 
-## Process
+## Phase 1: Gather context
 
-### Phase 1: Gather Context
+Check recent work:
+- Recent commits (`git log --oneline -10`)
+- Files changed (`git diff --name-only HEAD~5`)
 
-1. **Recent commits:**
+If the user provided context, use that. Otherwise ask: "What did we solve?"
+
+## Phase 2: Write solution document
+
 ```bash
-git log --oneline -10
+mkdir -p docs/asd/solutions/
 ```
 
-2. **Files changed:**
-```bash
-git diff --name-only HEAD~5
+Save to `docs/asd/solutions/YYYY-MM-DD-<topic>.md`
+
+Read the solution template for structure reference:
+```
+Read @asd/templates/solution.md
 ```
 
-3. **Ask user:** "What did we solve?"
+Fill in each section from the gathered context:
+- **Problem** - What was the issue?
+- **Symptoms** - How did it manifest?
+- **Root cause** - Why did it happen?
+- **Solution** - How was it fixed? Include code if helpful.
+- **Prevention** - How to prevent recurrence?
 
-### Phase 2: Parallel Analysis
+## Phase 3: Cross-reference
 
-Run subagents in parallel (text only, no file writes):
+1. Check existing `docs/asd/solutions/` for related solutions
+2. Add links in the Related section
+3. Update related solutions with a link back to this one
 
-1. **Context Analyzer** - Extract problem, symptoms
-2. **Solution Extractor** - Root cause, working solution
-3. **Related Docs Finder** - Check existing `docs/asd/solutions/`
-4. **Prevention Strategist** - How to prevent recurrence
+## Rules
 
-### Phase 3: Assemble Document
-
-Write to `docs/asd/solutions/YYYY-MM-DD-<topic>.md`:
-
-```markdown
----
-date: YYYY-MM-DD
-topic: <kebab-case-topic>
-type: bugfix|feature|learning
----
-
-# <Title>
-
-## Problem
-[What was the issue?]
-
-## Symptoms
-- Symptom 1
-- Symptom 2
-
-## Root Cause
-[Why did this happen?]
-
-## Solution
-[How was it fixed?]
-
-## Prevention
-[How to prevent recurrence?]
-
-## Related
-- [Related solutions]
-- [Related issues]
-```
-
-### Phase 4: Cross-Reference
-
-1. Update related solution docs with links
-2. Check if existing solutions need updating
-
-## Key Principles
-
-- **Capture while fresh** - Context evaporates quickly
-- **Be specific** - Include file:line references
-- **Focus on why** - Not just what, but why it happened
-- **Prevention over cure** - How to avoid recurrence
+- Capture while fresh - context evaporates quickly
+- Be specific - include file:line references and code snippets
+- Focus on why, not just what
+- Don't over-document obvious fixes - capture things worth remembering
+- One solution per document - don't combine unrelated fixes

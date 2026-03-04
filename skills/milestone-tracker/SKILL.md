@@ -1,71 +1,50 @@
 ---
 name: milestone-tracker
-description: "Use to track progress across multiple plans or phases. Visualizes status and helps manage milestones."
+description: "Use to record milestone completions. Appends entries to the project milestones file with stats from git history."
 ---
 
-# Milestone Tracker
+# Milestone tracker
 
-Track progress across plans and milestones.
+Record milestone completions with accomplishments and stats.
 
-## When to Use
+## When to use
 
-- Working on multi-phase features
-- Need to see overall progress
-- Completing a milestone
+- After completing a significant phase of work
+- After shipping a feature or version
+- When user says "record milestone" or "we shipped"
 
-## Process
+## Phase 1: Gather info
 
-### Phase 1: Check Existing Status
+Ask the user:
+- **Version** - What version or milestone name? (e.g. v0.8, "auth system")
+- **What shipped** - One sentence summary
 
-Check for existing milestone file:
+Then gather stats from git:
+- Files changed: `git diff --stat <start-commit>..HEAD`
+- Commit range: `git log --oneline <start-commit>..HEAD`
 
-```bash
-ls docs/asd/milestones.md 2>/dev/null
+If the user doesn't know the start commit, check for the previous milestone entry or use the last tag.
+
+## Phase 2: Write entry
+
+Check if `docs/asd/milestones.md` exists:
+- If yes, read it and prepend the new entry (newest first)
+- If no, create it using the milestone template
+
+Read the milestone template for structure reference:
+```
+Read @asd/templates/milestone.md
 ```
 
-### Phase 2: Track Progress
+Fill in: version, name, date, delivered summary, key accomplishments, file stats, git range, what's next.
 
-For each plan being worked on, track:
+## Phase 3: Confirm
 
-| Field | Description |
-|-------|-------------|
-| Status | not-started, in-progress, complete |
-| Plan | Plan name |
-| Tasks | N/M completed |
-| Blockers | Any blocking issues |
+Show the entry to the user before writing. Commit after confirmation.
 
-### Phase 3: Milestone Completion
+## Rules
 
-When milestone completes:
-
-1. Calculate stats:
-   - Files changed: `git diff --stat`
-   - Lines of code: `wc -l`
-   - Time elapsed
-
-2. Write milestone entry:
-
-```markdown
-## v[X.Y] [Name] (Shipped: YYYY-MM-DD)
-
-**Delivered:** [One sentence]
-
-**Key accomplishments:**
-- Achievement 1
-- Achievement 2
-
-**Stats:**
-- X files created/modified
-- Y lines of code
-- Z days from start
-
-**Git range:** `commit1` → `commit2`
-
-**What's next:** [Next milestone goals]
-```
-
-## Key Principles
-
-- Track continuously, not just at end
-- Update status after each checkpoint
-- Celebrate milestone completion
+- Entries are reverse chronological (newest first)
+- One entry per milestone - don't combine
+- Stats come from git, not estimates
+- Keep accomplishments to 3-5 bullets

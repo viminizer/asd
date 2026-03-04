@@ -8,31 +8,27 @@ argument-hint: "[optional: brief context about what was solved]"
 
 Document solved problems to build team knowledge.
 
-## Usage
+## Context
 
-```
-/asd:capture                    # Document recent fix
-/asd:capture [context hint]    # With additional context
-```
+<capture_context> #$ARGUMENTS </capture_context>
 
-## What It Does
+**If empty:** Analyze recent git history and ask "What did we solve?"
 
-1. Analyze recent work (from git history, recent files)
-2. Extract problem, solution, root cause
-3. Find related docs
-4. Generate prevention strategies
-5. Write to `docs/asd/solutions/`
+## What it does
+
+1. **Gather context** - Recent commits, changed files, user input
+2. **Extract** - Problem, root cause, solution, prevention
+3. **Write** - Save to `docs/asd/solutions/YYYY-MM-DD-<topic>.md`
+4. **Cross-reference** - Link to related existing solutions
+
+## Execution
+
+Invoke the `capture` skill and follow it exactly.
 
 ## Output
 
 Solution document at `docs/asd/solutions/YYYY-MM-DD-<topic>.md`
 
-## Why Capture
-
-- First solve: takes research
-- Second solve: minutes (with documentation)
-- Knowledge compounds over time
-
-## Next Step
+## Next step
 
 After capture → start new cycle with `/asd:brainstorm`
