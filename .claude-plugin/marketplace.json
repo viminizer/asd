@@ -1,0 +1,25 @@
+{
+  "name": "viminizer-marketplace",
+  "owner": {
+    "name": "Viminizer",
+    "url": "https://github.com/viminizer"
+  },
+  "metadata": {
+    "description": "Accelerated Software Development plugin marketplace",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "asd",
+      "description": "Accelerated Software Development - Enterprise workflow with brainstorming, planning, technical review, execution checkpoints, review, knowledge capture, quick fix, TDD, QA dogfood, and cleanup. 9 commands, 9 skills, 2 agents, 4 templates.",
+      "version": "0.7.0",
+      "author": {
+        "name": "Viminizer",
+        "url": "https://github.com/viminizer"
+      },
+      "homepage": "https://github.com/viminizer/asd",
+      "tags": ["asd", "workflow", "planning", "execution", "code-review", "knowledge-management"],
+      "source": "."
+    }
+  ]
+}
