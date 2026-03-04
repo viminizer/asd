@@ -13,36 +13,20 @@ Create validated implementation plans from ideas or brainstorm output. Plans com
 - After `/asd:brainstorm` completes
 - When converting requirements to actionable plans
 
-Announce: "Using the planning skill to create the implementation plan."
-
 ## Phase 1: Input Resolution
 
-### 1a. Check for Brainstorm
+### 1a. Check for Brainstorm Context
 
-Look for recent brainstorm documents matching the feature:
+If invoked from `/asd:brainstorm`, design context is already available in the conversation. Extract: key decisions, approach, constraints, open questions. Skip to Phase 2.
 
-```bash
-ls -la docs/brainstorms/*.md 2>/dev/null | head -5
-```
+### 1b. Idea Refinement (if no brainstorm context)
 
-**If brainstorm found (within 14 days, topic matches):**
-1. Read the brainstorm thoroughly
-2. Extract: key decisions, approach, constraints, open questions
-3. Announce: "Found brainstorm from [date]: [topic]. Using as foundation."
-4. Skip idea refinement (Phase 1b)
+If the feature description is already detailed, offer: "Description is clear. Proceed with research?"
 
-**If no brainstorm found** → Phase 1b.
-
-### 1b. Idea Refinement (if no brainstorm)
-
-Ask questions one at a time via AskUserQuestion:
+Otherwise, ask questions one at a time via AskUserQuestion:
 - What problem does this solve?
 - Any constraints or dependencies?
 - How will you measure success?
-
-Note signals for research decision: user familiarity, topic risk, uncertainty level.
-
-**Skip if:** Feature description is already detailed. Offer: "Description is clear. Proceed with research?"
 
 ## Phase 2: Research (Parallel)
 
@@ -77,22 +61,19 @@ Read the plan template for structure reference:
 Read @asd/templates/plan.md
 ```
 
-### 3b. Auto-Detect Detail Level
+### 3b. Scale to Scope
 
-Select based on scope (user can override with `--level` flag):
-- **MINIMAL:** 1-2 files, single concern (bugs, small fixes)
-- **STANDARD:** 3-10 files, multiple concerns (most features)
-- **COMPREHENSIVE:** 10+ files, architectural change (major features)
+Scale the plan naturally based on scope. Small changes get short plans. Large changes get more detail. No flags needed - just use good judgment.
 
 ### 3c. Write Strategic Sections
 
 Generate the plan header sections per template:
 - Frontmatter (title, type, status, date, origin if brainstorm)
 - Problem statement, proposed solution
-- Technical considerations (STANDARD+)
-- Alternative approaches, system-wide impact (COMPREHENSIVE)
+- Technical considerations (if scope warrants)
+- Alternative approaches, system-wide impact (for large changes)
 
-### 3d. Dependency Analysis (STANDARD+ mandatory)
+### 3d. Dependency Analysis
 
 For each planned task, determine:
 - Direct dependencies (what must complete first)
@@ -102,7 +83,7 @@ For each planned task, determine:
 
 No circular dependencies allowed.
 
-### 3e. Group Construction (STANDARD+ mandatory)
+### 3e. Group Construction
 
 **Isolate a task in its own group if it:**
 - Modifies database schema or shared contracts
@@ -119,7 +100,7 @@ If unsure → isolate.
 
 ### 3f. Write Bite-Sized Tasks
 
-For each task within each group, follow superpowers TDD format:
+For each task within each group, follow this TDD format:
 
 ```
 ### Task N: [Name]
@@ -145,7 +126,7 @@ For each task within each group, follow superpowers TDD format:
 ### 3g. Write Footer Sections
 
 - Acceptance criteria (testable, specific)
-- Execution contract (COMPREHENSIVE: commit strategy, group protocol, clean context rule)
+- Execution contract (for large changes: commit strategy, group protocol, clean context rule)
 - Risks and dependencies
 
 **Planning does NOT create branches.** Document branch strategy in the execution contract for `/asd:execute` to follow.
@@ -188,12 +169,10 @@ Use AskUserQuestion to present options:
 2. **Refine** → Improve specific sections
 3. **Deepen** → Add more research to specific areas
 
-**Pipeline mode:** If invoked from an automated workflow with `disable-model-invocation`, skip AskUserQuestion. Write plan and return silently.
-
 ## Key Principles
 
 - **Validate before writing** - Plans must pass self-check
-- **YAGNI** - Start with MINIMAL, escalate only if scope demands it
+- **YAGNI** - Scale plan to scope, no more
 - **Testable criteria** - Every acceptance criterion must be verifiable
 - **Zero-context tasks** - Engineer needs no prior codebase knowledge
 - **DRY** - No duplicate information across plan sections

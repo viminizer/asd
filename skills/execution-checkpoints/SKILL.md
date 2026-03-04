@@ -1,105 +1,151 @@
 ---
 name: execution-checkpoints
-description: "Use when executing implementation plans. Breaks work into verifiable checkpoints with tests, commits after each logical unit."
+description: "Use when executing implementation plans. Dispatches subagents per task with two-stage review loops (spec compliance then code quality)."
 ---
 
-# Execution Checkpoints
+# Execution checkpoints
 
-Execute plans with verifiable checkpoints and incremental progress.
+Execute validated plans using subagent-driven development. Each task gets a fresh subagent to prevent context pollution, followed by automated spec and code quality reviews.
 
-## When to Use
+## When to use
 
 - Running `/asd:execute` with a plan file
 - Implementing features from a validated plan
 
-## Process
+## Phase 1: Load and prepare
 
-### Phase 1: Prepare
+1. Read the plan file
+2. Create TodoWrite tasks for each plan task
+3. Identify task dependencies and execution order
 
-1. **Read the plan** completely
-2. **Verify understanding** - ask clarifying questions if needed
-3. **Get user approval** to proceed
+## Phase 2: Branch setup
 
-### Phase 2: Environment Setup
-
-**Check current branch:**
+Create a feature branch from the current branch:
 
 ```bash
-git branch --show-current
+git checkout -b feat/<plan-name>
 ```
 
-**If on default branch:**
-- Create feature branch: `git checkout -b feat/<name>`
-- Or use worktree for isolation
+Never start implementation on main/master without explicit user consent.
 
-**If on feature branch:**
-- Continue, or create new branch
+## Phase 3: Execute tasks
 
-### Phase 3: Break Into Checkpoints
+Process tasks sequentially in dependency order. Never dispatch multiple implementation subagents in parallel (they will conflict).
 
-Create checkpoints from plan tasks:
+### Per task:
 
-| Checkpoint | Task | Verification |
-|------------|------|--------------|
-| 1 | Implement X | Tests pass |
-| 2 | Add Y | Tests pass |
-| 3 | Integrate | Integration tests pass |
+#### 3a. Dispatch implementation subagent
 
-Use TodoWrite to track.
+Use the Agent tool to dispatch a subagent with:
+- Full task text from the plan (do NOT make the subagent read the plan file)
+- Scene-setting context: what was done in prior tasks, where this task fits
+- The `test-driven-development` skill should be followed
+- Instruction to commit when done
 
-### Phase 4: Execute Checkpoints
+**Subagent prompt template:**
 
-For each checkpoint:
+```
+You are implementing task N of a plan.
 
-1. **Mark in_progress**
-2. **Implement** - follow existing patterns
-3. **Write tests** - TDD if possible
-4. **Verify** - run tests
-5. **Checkpoint verification:**
-   - [ ] Tests pass
-   - [ ] No regressions
-   - [ ] Acceptance criteria met
-6. **Mark completed**
+## Context
+[What prior tasks accomplished, relevant files created/modified]
 
-### Phase 5: System-Wide Test Check
+## Your task
+[Full task text from plan, including file paths, code, commands]
 
-Before marking a checkpoint complete, verify:
-
-| Question | Action |
-|----------|--------|
-| What fires when this runs? | Trace callbacks, middleware |
-| Do tests exercise real chain? | At least one integration test |
-| Can failure leave orphaned state? | Verify cleanup on failure |
-| What other interfaces expose this? | Check parity needed |
-
-### Phase 6: Incremental Commits
-
-**Commit when:**
-- Logical unit complete (model, service, component)
-- Tests pass + meaningful progress
-- About to switch contexts
-
-**Don't commit when:**
-- Tests failing
-- Would need "WIP" message
-
-**Commit workflow:**
-```bash
-git add <files for this unit>
-git commit -m "feat(scope): description"
+## Rules
+- Follow TDD: write failing test first, then implement, then verify
+- Commit when the task is complete and tests pass
+- If you hit a blocker, report it clearly and stop
 ```
 
-### Phase 7: Final Verification
+#### 3b. Dispatch spec reviewer
 
-After all checkpoints:
+After the implementation subagent completes, dispatch a reviewer subagent:
 
-1. Run full test suite
-2. Verify no regressions
-3. Ensure acceptance criteria met
+```
+Review the changes for task N against this specification:
 
-## Key Principles
+[Full task text from plan]
 
-- **Verify at each checkpoint** - Don't defer testing
-- **Commit logical units** - Small, focused commits
-- **Test real interactions** - Not just isolated unit tests
-- **Clear context** - /clear between major sections if needed
+Check:
+- Does the implementation match what the plan specified?
+- Are all acceptance criteria met?
+- Are all files created/modified as specified?
+
+Report: PASS or list specific issues.
+```
+
+**If spec review fails:** Resume the implementation subagent using the Agent tool's `resume` parameter with its agent ID. Provide the specific issues to fix. After fixes, re-review. Repeat until PASS.
+
+#### 3c. Dispatch code quality reviewer
+
+Only after spec review passes, dispatch a code quality reviewer:
+
+```
+Review the changes for task N for code quality.
+
+Run: git diff feat/<plan-name>~1..HEAD
+
+Check:
+- Code clarity and readability
+- Error handling
+- Test coverage and quality
+- Follows existing codebase patterns
+
+Report: PASS or list specific issues.
+```
+
+**If code review fails:** Resume the implementation subagent (same `resume` parameter) to fix issues. Re-review. Repeat until PASS.
+
+#### 3d. Move to next task
+
+Only proceed when both reviews pass. Mark the TodoWrite task as completed.
+
+## Phase 4: Final verification
+
+After all tasks complete:
+
+1. Run the project's test suite (check CLAUDE.md or package.json for the test command)
+2. If no test suite exists, verify manually by running the changed code paths
+3. Verify acceptance criteria from the plan
+4. Check for regressions
+
+## Phase 5: Finish
+
+Follow the `finishing-a-development-branch` process to present options:
+
+1. **Merge locally** - merge feature branch into base branch
+2. **Create PR** - push and create pull request
+3. **Keep as-is** - leave branch for later
+4. **Discard** - delete the branch
+
+## When to stop and ask for help
+
+Stop executing immediately when:
+- Hit a blocker (missing dependency, test fails repeatedly, instruction unclear)
+- Plan has critical gaps
+- You don't understand an instruction
+- Verification fails after fix loop
+
+Ask for clarification rather than guessing.
+
+## Subagent communication
+
+- If a subagent asks questions, answer clearly and completely before letting it proceed
+- Provide additional context if needed - don't rush subagents into implementation
+
+## Error handling
+
+- If a subagent fails a task, dispatch a new fix subagent with specific instructions. Don't fix manually (context pollution).
+- If a reviewer finds issues, the same implementation subagent fixes them (resume it).
+- If a fix loop exceeds 3 iterations, stop and ask the user.
+- Never skip re-review after fixes.
+
+## Key principles
+
+- **Fresh context per task** - subagents prevent context pollution on large plans
+- **Spec before code quality** - verify correctness first, then style
+- **Sequential execution** - one task at a time, respect dependency order
+- **Commit per task** - each completed task gets its own commit
+- **Stop when blocked** - don't guess, ask

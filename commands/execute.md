@@ -1,39 +1,24 @@
 ---
 name: asd:execute
-description: "Execute implementation plans with checkpoints. Breaks work into verifiable chunks with test validation."
+description: "Execute implementation plans using subagents with automated review loops."
 argument-hint: "[plan file path]"
 ---
 
 # /asd:execute
 
-Execute implementation plans with verification checkpoints.
-
-## Usage
-
-```
-/asd:execute [plan file path]
-```
+Execute implementation plans using subagent-driven development. Each task gets a fresh subagent for implementation, then two review stages before moving on.
 
 ## What It Does
 
-1. Read and understand the plan
-2. Setup environment (branch/worktree)
-3. Break into checkpoint tasks
-4. Execute with verification at each checkpoint
-5. Incremental commits
-6. Verify all tests pass
-
-## Checkpoint Model
-
-Each checkpoint includes:
-- Task description
-- Verification criteria
-- Test requirement
+1. **Load plan** - Read plan file, identify tasks and dependencies
+2. **Setup branch** - Create feature branch from current HEAD
+3. **Per task** - Dispatch subagent to implement, then spec review, then code quality review
+4. **Finish** - Verify all tests pass, then present merge/PR options
 
 ## Output
 
-- Completed plan with checked items
-- Commits per logical unit
+- Feature branch with incremental commits per task
+- All tasks verified by spec + code quality review
 
 ## Next Step
 
