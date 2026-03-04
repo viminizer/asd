@@ -110,10 +110,10 @@ If validation fails: fix issues, re-validate. After 2 failures, write plan with 
 ### 4b. Write Plan
 
 ```bash
-mkdir -p docs/asd/plans/
+mkdir -p docs/plans/
 ```
 
-Save to `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
+Save to `docs/plans/YYYY-MM-DD-<type>-<name>-plan.md`
 
 Filename rules:
 - Date prefix required
@@ -134,8 +134,8 @@ If validator returns issues:
 
 Use AskUserQuestion to present options:
 
-1. **Review** (Recommended) → `/asd:technical_review docs/asd/plans/<filename>`
-2. **Execute** → `/asd:execute docs/asd/plans/<filename>`
+1. **Review** (Recommended) → `/asd:technical_review docs/plans/<filename>`
+2. **Execute** → `/asd:execute docs/plans/<filename>`
 3. **Refine** → Improve specific sections
 
 ## Key Principles

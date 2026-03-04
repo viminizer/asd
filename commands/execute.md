@@ -12,7 +12,7 @@ Execute implementation plans by dispatching `asd-forge` agents per task with TDD
 
 <plan_path> #$ARGUMENTS </plan_path>
 
-**If empty, ask:** "Which plan should I execute?" or check `docs/asd/plans/` for recent plans.
+**If empty, ask:** "Which plan should I execute?" or check `docs/plans/` for recent plans.
 
 ## Execution
 

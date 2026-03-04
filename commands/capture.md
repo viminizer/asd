@@ -18,7 +18,7 @@ Document solved problems to build team knowledge.
 
 1. **Gather context** - Recent commits, changed files, user input
 2. **Extract** - Problem, root cause, solution, prevention
-3. **Write** - Save to `docs/asd/solutions/YYYY-MM-DD-<topic>.md`
+3. **Write** - Save to `docs/solutions/YYYY-MM-DD-<topic>.md`
 4. **Cross-reference** - Link to related existing solutions
 
 ## Execution
@@ -27,7 +27,7 @@ Invoke the `capture` skill and follow it exactly.
 
 ## Output
 
-Solution document at `docs/asd/solutions/YYYY-MM-DD-<topic>.md`
+Solution document at `docs/solutions/YYYY-MM-DD-<topic>.md`
 
 ## Next step
 

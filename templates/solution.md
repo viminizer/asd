@@ -30,6 +30,6 @@ type: bugfix|feature|learning
 - [Prevention strategy 2]
 
 ## Related
-- [Related solution: docs/asd/solutions/...]
+- [Related solution: docs/solutions/...]
 - [Related issue: #123]
 - [Related PR: #456]

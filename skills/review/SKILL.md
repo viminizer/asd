@@ -65,9 +65,9 @@ Based on findings, use AskUserQuestion:
 ## Protected artifacts
 
 Never flag for deletion:
-- `docs/asd/plans/*.md`
-- `docs/asd/design/*.md`
-- `docs/asd/reviews/*.md`
+- `docs/plans/*.md`
+- `docs/design/*.md`
+- `docs/reviews/*.md`
 
 ## Rules
 

@@ -43,10 +43,10 @@ Run all relevant passes: security, performance, architecture, database, code qua
 ## Phase 3: Write review document
 
 ```bash
-mkdir -p docs/asd/reviews/
+mkdir -p docs/reviews/
 ```
 
-Save to `docs/asd/reviews/YYYY-MM-DD-<feature-name>.md`
+Save to `docs/reviews/YYYY-MM-DD-<feature-name>.md`
 
 Filename rules:
 - Date prefix required

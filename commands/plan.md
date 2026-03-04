@@ -13,7 +13,7 @@ Transform feature descriptions into validated implementation plans.
 1. **Input** - Use brainstorm context if available, or refine idea with user
 2. **Research** - Parallel research via `asd-repo-researcher` + `asd-learnings-researcher` + `asd-docs-researcher`
 3. **Plan** - Strategic overview + sequential bite-sized TDD tasks
-4. **Validate + Write** - Agent validation via `asd-plan-validator`, save to `docs/asd/plans/`
+4. **Validate + Write** - Agent validation via `asd-plan-validator`, save to `docs/plans/`
 5. **Next** - Offer: Review (recommended) / Execute / Refine
 
 ## Feature Description
@@ -28,7 +28,7 @@ Invoke the `planning` skill and follow it exactly.
 
 ## Output
 
-Plan at `docs/asd/plans/YYYY-MM-DD-<type>-<name>-plan.md`
+Plan at `docs/plans/YYYY-MM-DD-<type>-<name>-plan.md`
 
 ## Next Step
 

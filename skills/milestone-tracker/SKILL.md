@@ -27,7 +27,7 @@ If the user doesn't know the start commit, check for the previous milestone entr
 
 ## Phase 2: Write entry
 
-Check if `docs/asd/milestones.md` exists:
+Check if `docs/milestones.md` exists:
 - If yes, read it and prepend the new entry (newest first)
 - If no, create it using the milestone template
 

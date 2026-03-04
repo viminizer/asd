@@ -1,6 +1,6 @@
 ---
 name: asd:review_feature
-description: "Review an existing feature's implementation end-to-end. Produces a review file in docs/asd/reviews/."
+description: "Review an existing feature's implementation end-to-end. Produces a review file in docs/reviews/."
 argument-hint: "[feature name or description]"
 ---
 
@@ -18,7 +18,7 @@ Review an existing feature's implementation across backend and frontend. Produce
 
 1. **Find** - Search codebase for all files related to the feature
 2. **Review** - Dispatch `asd-code-reviewer` in audit mode with feature description
-3. **Write** - Save review to `docs/asd/reviews/YYYY-MM-DD-<feature-name>.md`
+3. **Write** - Save review to `docs/reviews/YYYY-MM-DD-<feature-name>.md`
 4. **Next steps** - Offer to fix issues found
 
 ## Execution
@@ -27,4 +27,4 @@ Invoke the `review-feature` skill and follow it exactly.
 
 ## Output
 
-Review document at `docs/asd/reviews/YYYY-MM-DD-<feature-name>.md`
+Review document at `docs/reviews/YYYY-MM-DD-<feature-name>.md`

@@ -1,6 +1,6 @@
 ---
 name: asd-learnings-researcher
-description: "Search docs/asd/solutions/ for relevant past solutions and institutional knowledge. Use before implementing features to avoid repeated mistakes."
+description: "Search docs/solutions/ for relevant past solutions and institutional knowledge. Use before implementing features to avoid repeated mistakes."
 model: haiku
 ---
 
@@ -15,10 +15,10 @@ A feature description provided by the orchestrator.
 ### 1. Check Directory Exists
 
 ```bash
-ls docs/asd/solutions/ 2>/dev/null
+ls docs/solutions/ 2>/dev/null
 ```
 
-If directory is empty or missing, return: "No documented solutions found. Directory docs/asd/solutions/ is empty or does not exist."
+If directory is empty or missing, return: "No documented solutions found. Directory docs/solutions/ is empty or does not exist."
 
 ### 2. Extract Keywords
 
@@ -32,8 +32,8 @@ From the feature description, identify:
 Run multiple Grep calls in parallel to find candidate files:
 
 ```
-Grep: pattern="title:.*<keyword>" path=docs/asd/solutions/ -i=true output_mode=files_with_matches
-Grep: pattern="tags:.*(<keyword1>|<keyword2>)" path=docs/asd/solutions/ -i=true output_mode=files_with_matches
+Grep: pattern="title:.*<keyword>" path=docs/solutions/ -i=true output_mode=files_with_matches
+Grep: pattern="tags:.*(<keyword1>|<keyword2>)" path=docs/solutions/ -i=true output_mode=files_with_matches
 ```
 
 If >25 candidates: narrow with more specific patterns.

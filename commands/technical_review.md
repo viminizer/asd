@@ -13,7 +13,7 @@ Review an implementation plan before executing it. Checks document quality, tech
 1. **Plan quality** - Clarity, completeness, specificity, YAGNI, unstated assumptions
 2. **Technical soundness** - Dispatch `asd-code-reviewer` on the plan's approach
 3. **Implementation feasibility** - Task ordering, dependencies, file paths, realistic scope
-4. **Learnings check** - Cross-reference past solutions if `docs/asd/solutions/` exists
+4. **Learnings check** - Cross-reference past solutions if `docs/solutions/` exists
 5. **Report** - Issues by severity, then offer next steps
 
 ## Output

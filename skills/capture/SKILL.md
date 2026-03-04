@@ -25,10 +25,10 @@ If the user provided context, use that. Otherwise ask: "What did we solve?"
 ## Phase 2: Write solution document
 
 ```bash
-mkdir -p docs/asd/solutions/
+mkdir -p docs/solutions/
 ```
 
-Save to `docs/asd/solutions/YYYY-MM-DD-<topic>.md`
+Save to `docs/solutions/YYYY-MM-DD-<topic>.md`
 
 Read the solution template for structure reference:
 ```
@@ -44,7 +44,7 @@ Fill in each section from the gathered context:
 
 ## Phase 3: Cross-reference
 
-1. Check existing `docs/asd/solutions/` for related solutions
+1. Check existing `docs/solutions/` for related solutions
 2. Add links in the Related section
 3. Update related solutions with a link back to this one
 

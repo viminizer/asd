@@ -9,11 +9,11 @@ Archive completed work into monthly files. Solutions are permanent knowledge and
 
 ## What it does
 
-1. **Archive completed plans** - `docs/asd/plans/` with `status: complete` → `docs/asd/archives/plans/YYYY-MM.md`
-2. **Archive old reviews** - `docs/asd/reviews/` older than 30 days → `docs/asd/archives/reviews/YYYY-MM.md`
+1. **Archive completed plans** - `docs/plans/` with `status: complete` → `docs/archives/plans/YYYY-MM.md`
+2. **Archive old reviews** - `docs/reviews/` older than 30 days → `docs/archives/reviews/YYYY-MM.md`
 
 **Never archives:**
-- `docs/asd/solutions/` - Permanent knowledge base
+- `docs/solutions/` - Permanent knowledge base
 
 ## Rules
 
@@ -25,10 +25,10 @@ Archive completed work into monthly files. Solutions are permanent knowledge and
 
 ## Process
 
-1. Scan `docs/asd/plans/` for files with `status: complete` in frontmatter
-2. Scan `docs/asd/reviews/` for files older than 30 days
+1. Scan `docs/plans/` for files with `status: complete` in frontmatter
+2. Scan `docs/reviews/` for files older than 30 days
 3. Show what will be archived and ask for confirmation
-4. Create archive directories: `mkdir -p docs/asd/archives/plans docs/asd/archives/reviews`
+4. Create archive directories: `mkdir -p docs/archives/plans docs/archives/reviews`
 5. Append each file to the appropriate monthly archive
 6. Delete originals
 7. Report what was archived
@@ -36,7 +36,7 @@ Archive completed work into monthly files. Solutions are permanent knowledge and
 ## Output
 
 ```
-docs/asd/archives/
+docs/archives/
 ├── plans/
 │   └── 2026-02.md
 └── reviews/

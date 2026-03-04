@@ -50,7 +50,7 @@ Skip passes that don't apply based on plan content.
 
 ### Phase 4: Learnings check (conditional)
 
-If `docs/asd/solutions/` exists, scan for past solutions that relate to the plan's domain. Flag any learnings that the plan should account for.
+If `docs/solutions/` exists, scan for past solutions that relate to the plan's domain. Flag any learnings that the plan should account for.
 
 Skip this phase if the directory doesn't exist.
 
