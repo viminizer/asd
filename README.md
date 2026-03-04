@@ -1,6 +1,8 @@
 # asd - Accelerated Software Development
 
-Workflow plugin for coding agents with structured planning, subagent-driven execution, automated code review, and knowledge capture.
+Coding agents are fast but sloppy. They skip research, write untested code, miss edge cases, and forget what they learned. Without structure, you spend more time fixing their output than you saved.
+
+asd fixes this by giving your agent a complete workflow - from brainstorming through implementation to knowledge capture. Every feature goes through research, planning, TDD, and two-stage code review. Dedicated subagents handle each task with fresh context, so nothing gets lost to context window pollution. Solutions are documented automatically so the same mistakes don't repeat.
 
 ## Installation
 
