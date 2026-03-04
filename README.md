@@ -2,6 +2,13 @@
 
 Workflow plugin for coding agents with structured planning, subagent-driven execution, automated code review, and knowledge capture.
 
+## Installation
+
+```bash
+/plugin marketplace add viminizer/asd
+/plugin install asd@viminizer/asd
+```
+
 ## Components
 
 | Component | Count |
@@ -68,13 +75,6 @@ Side workflows:
 - `/asd:review_feature` - Audit an existing feature's implementation
 - `/asd:dogfood` - QA a web application
 - `/asd:cleanup` - Archive completed work
-
-## Installation
-
-```bash
-/plugin marketplace add viminizer/asd
-/plugin install asd@viminizer/asd
-```
 
 ## Directory structure
 
