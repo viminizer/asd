@@ -1,0 +1,103 @@
+---
+name: fix
+description: "Use when fixing bugs. Enforces root cause investigation before any fix attempt. Follows investigate, fix (TDD), review cycle."
+---
+
+# Fix
+
+Fix bugs by finding the root cause first, then applying a targeted fix with test coverage.
+
+## Iron law
+
+No fixes without root cause investigation first.
+
+## When to use
+
+- User reports a bug or unexpected behavior
+- Error messages or failing tests need investigation
+- After `/asd:fix` is invoked
+
+## Phase 1: Investigate
+
+### 1a. Understand the bug
+
+- Read the error message or bug description carefully
+- Identify the affected code area (use Grep and Glob to find relevant files)
+- Read the code around the failure point
+
+### 1b. Reproduce
+
+- Run the failing command, test, or scenario
+- Confirm the bug exists and is consistent
+- If it can't be reproduced, stop and report back
+
+### 1c. Find root cause
+
+Trace the bug backward through the call stack. Don't fix where the error appears - find where the problem originates.
+
+- Check recent changes (`git log`, `git diff`) for related modifications
+- Read the code path from entry point to failure
+- Identify the exact line or logic error causing the issue
+
+**Do not proceed to Phase 2 until you can explain WHY the bug happens, not just WHERE.**
+
+## Phase 2: Fix (TDD)
+
+### 2a. Write failing test
+
+Write a test that reproduces the bug:
+- The test should fail now and pass after the fix
+- Keep the test minimal - test the specific bug, not everything around it
+
+### 2b. Implement fix
+
+Apply a single, targeted fix:
+- Fix the root cause, not the symptom
+- Change as little code as possible
+- Don't refactor surrounding code
+
+### 2c. Verify
+
+- Run the new test - should pass
+- Run the full test suite - no regressions
+- If no test suite exists, manually verify the fix
+
+## Phase 3: Review
+
+Dispatch the `asd-code-reviewer` agent on the fix:
+
+```
+Review scope: bug fix
+
+Run: git diff HEAD
+
+Review this bug fix for correctness and regressions.
+```
+
+If issues found, fix them and re-review.
+
+## Phase 4: Commit
+
+After review passes, commit with a descriptive message explaining:
+- What the bug was
+- What caused it (root cause)
+- How it was fixed
+
+## Anti-patterns
+
+Stop immediately if you catch yourself doing any of these:
+
+- "Quick fix for now, investigate later"
+- "Just try changing X and see if it works"
+- Adding multiple changes at once hoping one works
+- "I don't fully understand but this might work"
+
+If 3 fix attempts fail, stop and tell the user - this likely signals a deeper architectural problem.
+
+## Rules
+
+- One fix at a time - don't batch unrelated fixes
+- Root cause required before any code change
+- Failing test required before implementing fix
+- Review required before committing
+- Don't fix on main/master without explicit consent - create a branch if the fix is non-trivial

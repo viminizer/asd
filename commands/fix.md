@@ -1,60 +1,27 @@
 ---
 name: asd:fix
-description: "Quick fix workflow - create a bug fix plan and execute with parallel agents."
-argument-hint: "[issue description or bug to fix]"
-disable-model-invocation: true
+description: "Fix a bug with root cause investigation, TDD fix, and review."
+argument-hint: "[bug description or error message]"
 ---
 
 # /asd:fix
 
-Quick fix workflow with parallel execution.
+Fix a bug by finding the root cause first, then applying a targeted fix with test coverage.
 
-## Usage
+## Bug description
 
-```
-/asd:fix [issue description or bug to fix]
-```
+<bug_description> #$ARGUMENTS </bug_description>
 
-## What It Does
+**If empty, ask:** "What's the bug? Include error messages, unexpected behavior, or steps to reproduce."
 
-1. **Create fix plan** - Generate a bug fix plan
-2. **Execute in parallel** - Spawn multiple agents to fix simultaneously
-3. **Review** - Run code review in parallel
+## What it does
 
-## Steps
+1. **Investigate** - Reproduce, trace root cause, gather evidence
+2. **Fix** - Write failing test, implement fix, verify
+3. **Review** - Dispatch `asd-code-reviewer` on the diff
+4. **Commit** - If review passes
 
-### Phase 1: Plan
+## Output
 
-1. `/asd:plan $ARGUMENTS` — Create fix plan
-
-### Phase 2: Execute (Parallel)
-
-After plan is created, spawn parallel agents to execute:
-
-```
-Task(subagent for each fix task, parallel=true)
-```
-
-- Break fix into independent tasks
-- Spawn agents in parallel to handle each task
-- Agents coordinate through shared context
-
-### Phase 3: Review (Parallel)
-
-While execution completes, prepare review:
-- Spawn review agent as background task
-
-### Phase 4: Finalize
-
-After parallel execution:
-- Wait for all agents to complete
-- Run `/asd:review` on the changes
-
-## Parallel Execution Rules
-
-- Split fix into independent, parallelizable tasks
-- Each agent works on separate task
-- Merge results after all complete
-- If any agent fails, address issues and retry
-
-Start now.
+- Bug fix with test coverage on current branch
+- Review-verified commit
