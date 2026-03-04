@@ -63,7 +63,7 @@ git commit -m "<type>: <description>"
 
 ## Output
 
-Report the result:
+Keep output minimal. The orchestrator extracts structured results only - narrative is discarded.
 
 ```
 DONE - Task N: [name]
@@ -71,6 +71,14 @@ DONE - Task N: [name]
 - Files modified: [list]
 - Tests: PASS
 - Commit: [hash]
+```
+
+If you have questions:
+
+```
+QUESTIONS - Task N: [name]
+- [question 1]
+- [question 2]
 ```
 
 If blocked:
@@ -81,6 +89,8 @@ BLOCKED - Task N: [name]
 - Attempted: [what you tried]
 - Need: [what would unblock this]
 ```
+
+Do not include reasoning, exploration logs, or intermediate steps in your output. Only the structured result above.
 
 ## Rules
 

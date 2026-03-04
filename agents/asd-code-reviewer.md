@@ -89,26 +89,24 @@ Always runs.
 
 ## Output
 
-Report one of:
+Keep output minimal. The orchestrator extracts the verdict and issues only - narrative is discarded.
 
-**PASS** - no issues found.
+**PASS** - no issues found. Do not elaborate.
 
 **Issues found:**
 
 ```
-## Review: [scope]
-
-### Critical (block merge / must fix immediately)
+### Critical
 - [file:line] Description + what to fix
 
-### Warning (should fix)
+### Warning
 - [file:line] Description + what to fix
 
-### Suggestion (consider)
+### Suggestion
 - [file:line] Description + suggested improvement
 ```
 
-Group issues by pass (security, performance, architecture, database, code quality) within each severity level.
+Do not include reasoning, analysis narrative, or pass-by-pass commentary. Only the verdict (PASS) or the issues list above.
 
 ## Rules
 

@@ -14,9 +14,10 @@ Execute validated plans using subagent-driven development. Each task is dispatch
 
 ## Phase 1: Load and prepare
 
-1. Read the plan file
-2. Create a TodoWrite task for each plan task
-3. If the plan was validated by `asd-plan-validator`, use its complexity classifications. Otherwise, classify each task (see model selection below).
+1. Read the plan file once. Extract every task's full text (including file paths, code, commands, acceptance criteria). Store in memory - do not re-read the plan during execution.
+2. Note inter-task context: what each task produces that later tasks need.
+3. Create a TodoWrite task for each plan task.
+4. If the plan was validated by `asd-plan-validator`, use its complexity classifications. Otherwise, classify each task (see model selection below).
 
 ### Model selection
 
@@ -57,49 +58,38 @@ Dispatch the task to an `asd-forge` agent:
 Task asd-forge({
   context: [what prior tasks accomplished, relevant files created/modified],
   pre_read_files: [contents of files this task will modify],
-  task: [full task text from plan, including file paths, code, commands]
+  task: [full task text extracted in Phase 1]
 })
 ```
 
 Use the model selected in Phase 1 (haiku for simple, sonnet for complex).
 
+**If asd-forge returns questions instead of completed work:** Answer using context from the plan and codebase, then re-dispatch with the answers included. Do not guess on behalf of the subagent.
+
 ### 3c. Spec compliance review
 
-After the task completes, dispatch `asd-code-reviewer` for spec compliance:
+After the task completes, dispatch `asd-code-reviewer` using the spec compliance prompt template:
 
 ```
-Review scope: spec-compliance
-
-Specification:
-[Full task text from plan]
-
-Diff: git diff HEAD~1..HEAD
-
-Verify the implementation matches the spec exactly:
-- Every requirement implemented (nothing missing)
-- No extra features added (nothing beyond spec)
-- File paths match what was specified
-- Test coverage matches what was required
-Report PASS or list issues with file:line references.
+Read templates/spec-compliance-review.md
 ```
+
+Provide the template with:
+- **Specification:** Full task text extracted in Phase 1
+- **Diff:** `git diff HEAD~1..HEAD`
 
 **If issues found:** Resume the `asd-forge` agent to fix. Re-review. Max 3 iterations.
 
 ### 3d. Code quality review
 
-Only after spec compliance passes, dispatch `asd-code-reviewer` for code quality:
+Only after spec compliance passes, dispatch `asd-code-reviewer` using the code quality prompt template:
 
 ```
-Review scope: code-quality
-
-Diff: git diff HEAD~1..HEAD
-
-Check code quality only (spec compliance already verified):
-- Separation of concerns, error handling, DRY
-- Security, performance, edge cases
-- Test quality (tests verify logic, not mocks)
-Report PASS or list issues with file:line references.
+Read templates/code-quality-review.md
 ```
+
+Provide the template with:
+- **Diff:** `git diff HEAD~1..HEAD`
 
 **If issues found:** Resume the `asd-forge` agent to fix. Re-review. Max 3 iterations.
 
@@ -155,6 +145,22 @@ Ask for clarification rather than guessing.
 - If a fix loop exceeds 3 iterations, stop and ask the user
 - Never skip re-review after fixes
 
+## Context hygiene
+
+Subagent output must not flood the orchestrator's context window.
+
+**Dispatching subagents:**
+- Pass only what the subagent needs: task text, pre-read files, and a one-line summary of prior task results. Never forward raw output from previous subagents.
+- Prior task context is just: `"Task N done: created foo.rb, bar.rb. Commit abc123."` - not the full agent response.
+
+**Processing subagent results:**
+- Extract only the structured result: DONE/BLOCKED/PASS/issues list.
+- Discard narrative, reasoning, and intermediate output - do not carry it forward.
+- For reviews, carry forward only: verdict (PASS or issue list). Drop everything else.
+
+**Between tasks:**
+- Do not accumulate context. Each task starts with: its own task text (from Phase 1), pre-read files (from 3a), and one-line summaries of prior tasks.
+
 ## Key principles
 
 - **Sequential execution** - tasks run in plan order
@@ -162,5 +168,6 @@ Ask for clarification rather than guessing.
 - **Smart model selection** - haiku for simple tasks, sonnet for complex
 - **Just-in-time context** - read files per task and pass to asd-forge directly
 - **Fresh context per task** - subagents prevent context pollution
+- **Minimal context return** - extract structured results only, discard narrative
 - **Commit per task** - each completed task gets its own commit
 - **Stop when blocked** - don't guess, ask
