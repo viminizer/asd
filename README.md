@@ -33,7 +33,7 @@ Workflow plugin for coding agents with structured planning, subagent-driven exec
 | `brainstorming` | Explore user intent, propose approaches, transition to planning |
 | `planning` | Transform ideas into validated plans with TDD tasks |
 | `technical-review` | Check plan quality, technical soundness, implementation feasibility |
-| `execution-checkpoints` | Subagent-driven execution with two-stage review loops |
+| `execution-checkpoints` | Subagent-driven execution with parallel groups and combined reviews |
 | `finishing-a-development-branch` | Present merge/PR/keep/discard options after execution |
 | `test-driven-development` | RED-GREEN-REFACTOR cycle before writing code |
 | `review` | Dispatch asd-code-reviewer on diffs and PRs |

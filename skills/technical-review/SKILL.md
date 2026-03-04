@@ -43,9 +43,11 @@ Evaluate against:
 | **Specificity** | Tasks have concrete file paths, code patterns, and expected behavior |
 | **YAGNI** | No hypothetical features, simplest approach chosen, no premature abstractions |
 
-### Phase 3: Technical soundness
+### Phase 3: Technical soundness + implementation feasibility (parallel)
 
-Dispatch the `asd-code-reviewer` agent to review the plan's technical approach:
+Dispatch both agents in parallel:
+
+**Agent 1:** `asd-code-reviewer` for technical approach:
 
 ```
 Review scope: plan-level audit
@@ -59,9 +61,7 @@ Run relevant passes: security, performance, architecture, database.
 Skip passes that don't apply based on plan content.
 ```
 
-### Phase 4: Implementation feasibility
-
-Dispatch the `asd-plan-validator` agent (haiku) to check structure and feasibility:
+**Agent 2:** `asd-plan-validator` (haiku) for structure and feasibility:
 
 ```
 [Full plan content]
@@ -69,13 +69,13 @@ Dispatch the `asd-plan-validator` agent (haiku) to check structure and feasibili
 Validate task ordering, file paths, scope per task, and completeness.
 ```
 
-### Phase 5: Learnings check (conditional)
+### Phase 4: Learnings check (conditional)
 
 If `docs/asd/solutions/` exists, scan for past solutions that relate to the plan's domain. Flag any learnings that the plan should account for.
 
 Skip this phase if the directory doesn't exist.
 
-### Phase 6: Report
+### Phase 5: Report
 
 Organize all findings by severity:
 
@@ -94,7 +94,7 @@ Organize all findings by severity:
 
 If no issues found, report **PASS**.
 
-### Phase 7: Next steps
+### Phase 6: Next steps
 
 Based on findings:
 

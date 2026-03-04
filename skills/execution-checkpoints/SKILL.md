@@ -15,10 +15,9 @@ Execute validated plans using subagent-driven development. Tasks within a group 
 ## Phase 1: Load and prepare
 
 1. Read the plan file
-2. Create TodoWrite tasks for each plan task
+2. Create tasks to track each plan task
 3. Identify groups, dependencies, and execution order
-4. Classify each task's complexity (see model selection below)
-5. Pre-read files that tasks will modify (for pre-warming subagent context)
+4. If the plan was validated by `asd-plan-validator`, use its complexity classifications. Otherwise, classify each task's complexity (see model selection below).
 
 ### Model selection
 
@@ -51,7 +50,7 @@ Process groups sequentially in dependency order. Within each group, execute task
 
 #### 3a. Pre-warm context
 
-For each task in the group, read the files it will modify. Pass file contents directly to the subagent so it doesn't need to explore.
+For each task in the group, read the current version of files it will modify. Pass file contents directly to the subagent so it doesn't need to explore.
 
 #### 3b. Dispatch implementation subagents (parallel within group)
 
@@ -97,7 +96,7 @@ Specification for each task:
 [Task N: full task text]
 [Task M: full task text]
 
-Diff: git diff HEAD~<tasks-in-group>..HEAD
+Diff: git diff <pre-group-commit>..HEAD
 
 Check both spec compliance AND code quality in one pass.
 Report PASS or list issues per task.
@@ -107,7 +106,7 @@ Report PASS or list issues per task.
 
 #### 3d. Move to next group
 
-Only proceed when the group review passes. Mark all TodoWrite tasks in the group as completed.
+Only proceed when the group review passes. Mark all tasks in the group as completed.
 
 ## Phase 4: Final verification
 
@@ -170,7 +169,7 @@ Ask for clarification rather than guessing.
 - **Sequential between groups** - respect dependency order
 - **One review per group** - combined spec + quality check, not two separate passes
 - **Smart model selection** - haiku for simple tasks, sonnet for complex
-- **Pre-warmed context** - pass file contents to subagents directly
+- **Just-in-time context** - read files per group and pass to subagents directly
 - **Fresh context per task** - subagents prevent context pollution
 - **Commit per task** - each completed task gets its own commit
 - **Stop when blocked** - don't guess, ask

@@ -14,14 +14,6 @@ Execute implementation plans using subagent-driven development with parallel exe
 
 **If empty, ask:** "Which plan should I execute?" or check `docs/asd/plans/` for recent plans.
 
-## What it does
-
-1. **Load plan** - Read plan, classify task complexity, pre-read files
-2. **Setup branch** - Create feature branch from current HEAD
-3. **Per group** - Dispatch tasks in parallel (haiku for simple, sonnet for complex), then one combined review
-4. **Full review** - Review entire branch diff, fix any issues
-5. **Finish** - Present merge/PR options
-
 ## Execution
 
 Invoke the `execution-checkpoints` skill and follow it exactly.
