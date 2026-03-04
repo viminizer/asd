@@ -1,11 +1,11 @@
 ---
 name: execution-checkpoints
-description: "Use when executing implementation plans. Dispatches subagents per task with two-stage review loops (spec compliance then code quality)."
+description: "Use when executing implementation plans. Dispatches subagents per task with parallel group execution, combined reviews, and smart model selection."
 ---
 
 # Execution checkpoints
 
-Execute validated plans using subagent-driven development. Each task gets a fresh subagent to prevent context pollution, followed by automated spec and code quality reviews.
+Execute validated plans using subagent-driven development. Tasks within a group run in parallel, each gets a combined spec + quality review, and model selection is based on task complexity.
 
 ## When to use
 
@@ -16,7 +16,22 @@ Execute validated plans using subagent-driven development. Each task gets a fres
 
 1. Read the plan file
 2. Create TodoWrite tasks for each plan task
-3. Identify task dependencies and execution order
+3. Identify groups, dependencies, and execution order
+4. Classify each task's complexity (see model selection below)
+5. Pre-read files that tasks will modify (for pre-warming subagent context)
+
+### Model selection
+
+Classify each task before execution:
+
+| Complexity | Model | Examples |
+|------------|-------|---------|
+| **Simple** | haiku | Create config, add boilerplate, wire routes, rename files, add simple test |
+| **Complex** | sonnet | New business logic, security-sensitive code, complex algorithms, architecture decisions |
+
+Heuristics for simple: task creates files from a template, modifies < 3 files, has exact code provided in the plan, no branching logic.
+
+When in doubt, use sonnet.
 
 ## Phase 2: Branch setup
 
@@ -28,17 +43,22 @@ git checkout -b feat/<plan-name>
 
 Never start implementation on main/master without explicit user consent.
 
-## Phase 3: Execute tasks
+## Phase 3: Execute groups
 
-Process tasks sequentially in dependency order. Never dispatch multiple implementation subagents in parallel (they will conflict).
+Process groups sequentially in dependency order. Within each group, execute tasks in parallel.
 
-### Per task:
+### Per group:
 
-#### 3a. Dispatch implementation subagent
+#### 3a. Pre-warm context
 
-Use the Agent tool to dispatch a subagent with:
+For each task in the group, read the files it will modify. Pass file contents directly to the subagent so it doesn't need to explore.
+
+#### 3b. Dispatch implementation subagents (parallel within group)
+
+Dispatch all tasks in the group simultaneously using the Agent tool. Each subagent gets:
 - Full task text from the plan (do NOT make the subagent read the plan file)
-- Scene-setting context: what was done in prior tasks, where this task fits
+- Scene-setting context: what prior groups accomplished, relevant files created/modified
+- Pre-read file contents for files being modified
 - The `test-driven-development` skill should be followed
 - Instruction to commit when done
 
@@ -48,7 +68,10 @@ Use the Agent tool to dispatch a subagent with:
 You are implementing task N of a plan.
 
 ## Context
-[What prior tasks accomplished, relevant files created/modified]
+[What prior groups accomplished, relevant files created/modified]
+
+## Pre-read files
+[Contents of files this task will modify - so you don't need to read them]
 
 ## Your task
 [Full task text from plan, including file paths, code, commands]
@@ -59,42 +82,36 @@ You are implementing task N of a plan.
 - If you hit a blocker, report it clearly and stop
 ```
 
-#### 3b. Dispatch spec review
+Use the model selected in Phase 1 (haiku for simple, sonnet for complex).
 
-After the implementation subagent completes, dispatch the `asd-code-reviewer` agent:
+**Parallel safety:** Tasks in the same group must not modify the same files. The plan's group construction rules guarantee this. If you suspect a conflict, run those tasks sequentially instead.
 
-```
-Review scope: task-level
+#### 3c. Combined review (per group)
 
-Specification:
-[Full task text from plan]
-
-Check spec compliance for task N. Report PASS or list issues.
-```
-
-**If spec review fails:** Resume the implementation subagent using the Agent tool's `resume` parameter with its agent ID. Provide the specific issues to fix. After fixes, re-review. Repeat until PASS.
-
-#### 3c. Dispatch code quality review
-
-Only after spec review passes, dispatch `asd-code-reviewer` again:
+After all tasks in the group complete, dispatch a single `asd-code-reviewer` review covering the entire group:
 
 ```
-Review scope: task-level
+Review scope: group-level
 
-Run: git diff feat/<plan-name>~1..HEAD
+Specification for each task:
+[Task N: full task text]
+[Task M: full task text]
 
-Check code quality only (spec already passed). Report PASS or list issues.
+Diff: git diff HEAD~<tasks-in-group>..HEAD
+
+Check both spec compliance AND code quality in one pass.
+Report PASS or list issues per task.
 ```
 
-**If code review fails:** Resume the implementation subagent (same `resume` parameter) to fix issues. Re-review. Repeat until PASS.
+**If review finds issues:** Resume the relevant implementation subagent using the Agent tool's `resume` parameter. Provide the specific issues to fix. After fixes, re-review only the affected tasks. Repeat until PASS. Max 3 iterations per task.
 
-#### 3d. Move to next task
+#### 3d. Move to next group
 
-Only proceed when both reviews pass. Mark the TodoWrite task as completed.
+Only proceed when the group review passes. Mark all TodoWrite tasks in the group as completed.
 
 ## Phase 4: Final verification
 
-After all tasks complete:
+After all groups complete:
 
 1. Dispatch the `asd-test-runner` agent (haiku) to run the full test suite
 2. If no test suite exists, verify manually by running the changed code paths
@@ -103,14 +120,14 @@ After all tasks complete:
 
 ## Phase 5: Full branch review
 
-After all tasks pass and tests are green, dispatch the `asd-code-reviewer` agent on the entire branch:
+After all groups pass and tests are green, dispatch the `asd-code-reviewer` agent on the entire branch:
 
 ```
 Review scope: branch-level
 
 Run: git diff main..HEAD (or the base branch)
 
-Focus on cross-task integration issues only. Per-task reviews already passed.
+Focus on cross-task integration issues only. Per-group reviews already passed.
 Report PASS or list issues.
 ```
 
@@ -149,8 +166,11 @@ Ask for clarification rather than guessing.
 
 ## Key principles
 
-- **Fresh context per task** - subagents prevent context pollution on large plans
-- **Spec before code quality** - verify correctness first, then style
-- **Sequential execution** - one task at a time, respect dependency order
+- **Parallel within groups** - tasks in the same group run simultaneously
+- **Sequential between groups** - respect dependency order
+- **One review per group** - combined spec + quality check, not two separate passes
+- **Smart model selection** - haiku for simple tasks, sonnet for complex
+- **Pre-warmed context** - pass file contents to subagents directly
+- **Fresh context per task** - subagents prevent context pollution
 - **Commit per task** - each completed task gets its own commit
 - **Stop when blocked** - don't guess, ask

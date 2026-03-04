@@ -35,12 +35,19 @@ For each referenced file:
 - Check that "Create" files don't already exist
 - Verify test file paths follow the project's test directory pattern
 
-### 4. Scope check
+### 4. Scope and complexity check
 
 For each task:
 - Is it small enough for one subagent (2-5 minutes of work)?
 - Could it be split if too large?
 - Is the verification step clear and runnable?
+
+Classify each task's complexity for model selection during execution:
+
+| Complexity | Criteria |
+|------------|----------|
+| **simple** | Creates files from template, modifies < 3 files, exact code provided, no branching logic |
+| **complex** | New business logic, security-sensitive, complex algorithms, architecture decisions |
 
 ### 5. Completeness check
 
@@ -54,6 +61,11 @@ For each task:
 
 ```
 PASS - Plan structure is valid, N tasks in M groups, no issues found.
+
+Task complexity:
+- Task 1: simple
+- Task 2: complex
+- Task 3: simple
 ```
 
 ### On issues:
