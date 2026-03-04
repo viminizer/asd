@@ -16,6 +16,13 @@ No fixes without root cause investigation first.
 - User reports a bug or unexpected behavior
 - Error messages or failing tests need investigation
 
+## Language detection
+
+Before dispatching agents, detect the project language from file extensions, build files, and the bug context:
+- **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-*` agents
+- **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-*` agents
+- **Other or mixed:** use generic `asd-*` agents
+
 ## Phase 1: Investigate
 
 ### Simple bugs (root cause is obvious from the error)
@@ -24,7 +31,7 @@ If the error message, stack trace, or context makes the root cause immediately c
 
 ### Complex bugs (root cause is unclear)
 
-Dispatch the `asd-investigator` agent with:
+Dispatch the appropriate investigator (`asd-java-investigator`, `asd-ts-investigator`, or `asd-investigator`) with:
 - The bug description and error messages
 - Affected file paths or areas (if known)
 - Any initial observations you have
@@ -61,7 +68,7 @@ Apply a single, targeted fix:
 
 ## Phase 3: Review
 
-Dispatch the `asd-code-reviewer` agent on the fix:
+Dispatch the appropriate reviewer (`asd-java-reviewer`, `asd-ts-reviewer`, or `asd-code-reviewer`) on the fix:
 
 ```
 Review scope: bug fix

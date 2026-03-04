@@ -13,6 +13,13 @@ Create validated implementation plans from ideas or brainstorm output. Plans com
 - After `/asd:brainstorm` completes
 - When converting requirements to actionable plans
 
+## Language detection
+
+Before dispatching agents, detect the project language from file extensions and build files:
+- **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-*` agents
+- **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-*` agents
+- **Other or mixed:** use generic `asd-*` agents
+
 ## Phase 1: Input Resolution
 
 ### 1a. Check for Brainstorm Context
@@ -43,7 +50,7 @@ Launch all applicable agents in parallel. Wait for all to return.
 
 ## Phase 3: Plan Generation
 
-Dispatch the `asd-plan-writer` agent with:
+Dispatch the appropriate plan-writer (`asd-java-plan-writer`, `asd-ts-plan-writer`, or `asd-plan-writer`) with:
 - Feature description (and brainstorm context if available)
 - Raw research agent outputs from Phase 2 (pass them through, don't summarize)
 - Any constraints or decisions from user interaction
