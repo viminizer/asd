@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Accelerated Software Development plugin marketplace",
-    "version": "1.0.1"
+    "version": "1.0.2"
   },
   "plugins": [
     {
@@ -18,7 +18,14 @@
         "url": "https://github.com/viminizer"
       },
       "homepage": "https://github.com/viminizer/asd",
-      "tags": ["asd", "workflow", "planning", "execution", "code-review", "knowledge-management"],
+      "tags": [
+        "asd",
+        "workflow",
+        "planning",
+        "execution",
+        "code-review",
+        "knowledge-management"
+      ],
       "source": {
         "source": "url",
         "url": "https://github.com/viminizer/asd.git"
