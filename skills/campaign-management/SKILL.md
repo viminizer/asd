@@ -24,7 +24,7 @@ When no file path is given:
 
 1. Ask the user to describe the big change (use `$ARGUMENTS` if provided)
 2. Run `mkdir -p docs/checklists/`
-3. If research context was passed from a brainstorming or planning escalation, use it. Otherwise dispatch `asd-repo-researcher` to scan the codebase for files and modules related to the change.
+3. If research context was passed from a brainstorming or planning escalation, use it. Otherwise dispatch `asd-campaign-researcher` to explore the codebase in depth (it runs parallel searches for structure, usage patterns, and dependencies, returning a structured module breakdown).
 4. Analyze scope and suggest an incremental approach (e.g. "migrate by module" or "migrate by feature area")
 5. Present the approach and ask the user to confirm
 6. Generate ordered checklist items. Each item includes:
