@@ -120,7 +120,21 @@ Report PASS or list issues.
 
 **If review finds issues:** Dispatch a fix subagent to address them. Re-run tests. Re-review. Max 3 iterations.
 
-## Phase 6: Finish
+## Phase 6: Campaign auto-complete (conditional)
+
+After all tasks pass and branch review completes, check if the plan file contains a campaign link comment: `<!-- campaign: docs/checklists/<name>.md#<item-number> -->`.
+
+If found:
+1. Read the referenced campaign file
+2. Mark the item as `done`
+3. Update the progress line (recount done/total)
+4. Update the `updated` date in frontmatter
+5. If all items are now `done`, move file to `docs/checklists/archive/` and print summary
+6. Commit the campaign file update
+
+If not found, skip this phase silently.
+
+## Phase 7: Finish
 
 Follow the `finishing-a-development-branch` process to present options:
 
