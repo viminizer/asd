@@ -73,13 +73,34 @@ Organize all findings by severity:
 
 If no issues found, report **PASS**.
 
-### Phase 6: Next steps
+### Phase 6: Score
 
-Based on findings:
+Score the plan on each criterion from 1 to 10. Base scores on findings from phases 2-4.
 
-- **Critical issues** - Fix the plan, then re-review (`/asd:technical_review`)
-- **Warnings only** - Ask: fix first or proceed to `/asd:execute`?
-- **Clean / suggestions only** - Offer `/asd:execute`
+```
+## Plan score
+
+| Criteria                    | Score | Notes                                |
+|-----------------------------|-------|--------------------------------------|
+| Clarity                     |  _/10 | How easy to understand and follow    |
+| Completeness                |  _/10 | All requirements and edge cases covered |
+| Specificity                 |  _/10 | Exact paths, commands, expected outputs |
+| YAGNI                       |  _/10 | No unnecessary features or abstractions |
+| Technical soundness         |  _/10 | Correct approach, no design flaws    |
+| Implementation feasibility  |  _/10 | Realistic scope, correct ordering    |
+
+**Overall: _/10**
+```
+
+Overall is the average of all six scores, rounded to one decimal.
+
+### Phase 7: Next steps
+
+Based on findings and score:
+
+- **Critical issues or overall < 6** - Fix the plan, then re-review (`/asd:technical_review`)
+- **Warnings only or overall 6-7** - Ask: fix first or proceed to `/asd:execute`?
+- **Clean / suggestions only or overall > 7** - Offer `/asd:execute`
 
 ## Rules
 

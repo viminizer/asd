@@ -18,8 +18,20 @@ Review an implementation plan before executing it. Checks document quality, tech
 
 ## Output
 
-Review report with issues grouped by severity (critical, warning, suggestion), then:
+Review report with issues grouped by severity (critical, warning, suggestion), then a plan score:
 
-- **Critical issues found** - fix plan, re-review
-- **Warnings only** - fix or proceed to `/asd:execute`
-- **Clean** - proceed to `/asd:execute`
+| Criteria | Score |
+|---|---|
+| Clarity | _/10 |
+| Completeness | _/10 |
+| Specificity | _/10 |
+| YAGNI | _/10 |
+| Technical soundness | _/10 |
+| Implementation feasibility | _/10 |
+| **Overall** | _/10 |
+
+Next steps based on findings and score:
+
+- **Critical issues or overall < 6** - fix plan, re-review
+- **Warnings only or overall 6-7** - fix or proceed to `/asd:execute`
+- **Clean or overall > 7** - proceed to `/asd:execute`
