@@ -50,6 +50,19 @@ Otherwise, ask questions one at a time via AskUserQuestion:
 
 Launch all applicable agents in parallel. Wait for all to return.
 
+### Scope check (after research)
+
+If the research reveals the change is too large for a single plan (10+ files across multiple modules, or multiple independent migration steps), suggest a campaign instead:
+
+"This looks too big for a single plan - it spans [N files across M modules]. Want to create a campaign to break it into incremental steps instead?"
+
+If user agrees, invoke `/asd:campaign_create` and pass the research context so it doesn't re-analyze:
+- Feature description from user
+- Research findings from `asd-repo-researcher`
+- Any learnings from `asd-learnings-researcher`
+
+If user declines, continue with the plan (they may want to tackle a subset).
+
 ## Phase 3: Plan Generation
 
 Dispatch the appropriate plan-writer (`asd-java-plan-writer`, `asd-ts-plan-writer`, or `asd-plan-writer`) with:
@@ -65,6 +78,12 @@ Filename rules:
 - End with `-plan.md`
 
 The plan-writer runs in a clean context, reads the template and relevant source files, and writes the complete plan file.
+
+### Campaign link (conditional)
+
+If the plan was invoked from `/asd:campaign_next`, the campaign context includes a campaign link: `<!-- campaign: docs/checklists/<name>.md#<item-number> -->`.
+
+Add this comment immediately after the closing `---` of the frontmatter (before the `#` title). This is how `execution-checkpoints` links the plan back to the campaign for auto-complete.
 
 ## Phase 4: Validate and Next Steps
 

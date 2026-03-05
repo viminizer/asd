@@ -92,6 +92,19 @@ Dispatch the `asd-approach-proposer` agent with:
 
 The agent returns 2-3 approaches with trade-offs and a recommendation. Present the results to the user and ask which approach they prefer.
 
+#### Campaign escalation (after approaches)
+
+If the recommended approach involves multiple independent phases or incremental migration, suggest a campaign:
+
+"This looks like it would benefit from a campaign - incremental implementation tracked across multiple plans. Want to create a campaign instead of a single plan?"
+
+If user agrees, invoke `/asd:campaign_create` with the brainstorm context:
+- Feature description
+- User decisions from Phase 2
+- Approach chosen from Phase 3
+
+If user declines, continue to Phase 4 (design).
+
 ### Phase 4: Present Design
 
 Present the design in sections, scaled to complexity (200-300 words max each).
