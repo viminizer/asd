@@ -15,10 +15,10 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 
 | Component | Count |
 |-----------|-------|
-| Commands | 10 |
-| Skills | 12 |
-| Agents | 9 |
-| Templates | 4 |
+| Commands | 14 |
+| Skills | 15 |
+| Agents | 19 |
+| Templates | 7 |
 
 ## Commands
 
@@ -34,6 +34,10 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 | `/asd:capture` | Document solved problems for knowledge compounding |
 | `/asd:dogfood` | QA a web app - find bugs and UX issues |
 | `/asd:cleanup` | Archive completed plans and old reviews |
+| `/asd:campaign_create` | Create a campaign to track a big change across multiple plans |
+| `/asd:campaign_edit` | Add, remove, or reorder items in a campaign |
+| `/asd:campaign_next` | Pick the next campaign item and create a plan for it |
+| `/asd:campaign_status` | View progress of campaigns |
 
 ## Skills
 
@@ -51,6 +55,9 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 | `capture` | Document problems, root causes, and prevention strategies |
 | `dogfood` | Systematic web app QA with agent-browser |
 | `milestone-tracker` | Record milestone completions with git stats |
+| `campaign-management` | Manage campaigns - create, edit, next, and status operations |
+| `java-spring-boot` | Spring Boot conventions and best practices |
+| `typescript-expert` | TypeScript/JavaScript conventions and best practices |
 
 ## Agents
 
@@ -65,11 +72,26 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 | `asd-file-scoper` | Find all files related to a feature for review scope (haiku) |
 | `asd-test-runner` | Run tests and return concise pass/fail summary (haiku) |
 | `asd-plan-validator` | Validate plan structure, task ordering, and feasibility (haiku) |
+| `asd-plan-writer` | Write implementation plans from research context |
+| `asd-approach-proposer` | Propose 2-3 implementation approaches with trade-offs |
+| `asd-investigator` | Deep root cause investigation for bug fixes |
+| `asd-campaign-researcher` | Parallel codebase exploration for campaign creation |
+| `asd-java-plan-writer` | Java/Spring-specialized plan writer |
+| `asd-java-reviewer` | Java/Spring-specialized code reviewer |
+| `asd-java-investigator` | Java/Spring-specialized root cause investigator |
+| `asd-ts-plan-writer` | TypeScript/JavaScript-specialized plan writer |
+| `asd-ts-reviewer` | TypeScript/JavaScript-specialized code reviewer |
+| `asd-ts-investigator` | TypeScript/JavaScript-specialized root cause investigator |
 
 ## Workflow
 
 ```
 /asd:brainstorm → /asd:plan → /asd:technical_review → /asd:execute → /asd:capture
+```
+
+For big changes spanning multiple plans:
+```
+/asd:campaign_create → /asd:campaign_next → (plan → execute loop) → /asd:campaign_status
 ```
 
 Side workflows:
@@ -83,45 +105,65 @@ Side workflows:
 ```
 asd/
 ├── .claude-plugin/       # Plugin metadata
-├── agents/               # Specialized agents
+├── agents/               # 19 specialized agents
+│   ├── asd-approach-proposer.md
+│   ├── asd-campaign-researcher.md
 │   ├── asd-code-reviewer.md
-│   ├── asd-repo-researcher.md
-│   ├── asd-learnings-researcher.md
-│   ├── asd-docs-researcher.md
-│   ├── asd-forge.md
 │   ├── asd-diff-analyzer.md
+│   ├── asd-docs-researcher.md
 │   ├── asd-file-scoper.md
+│   ├── asd-forge.md
+│   ├── asd-investigator.md
+│   ├── asd-java-investigator.md
+│   ├── asd-java-plan-writer.md
+│   ├── asd-java-reviewer.md
+│   ├── asd-learnings-researcher.md
+│   ├── asd-plan-validator.md
+│   ├── asd-plan-writer.md
+│   ├── asd-repo-researcher.md
 │   ├── asd-test-runner.md
-│   └── asd-plan-validator.md
-├── commands/             # /asd:* commands
+│   ├── asd-ts-investigator.md
+│   ├── asd-ts-plan-writer.md
+│   └── asd-ts-reviewer.md
+├── commands/             # 14 /asd:* commands
 │   ├── brainstorm.md
-│   ├── plan.md
-│   ├── technical_review.md
+│   ├── campaign_create.md
+│   ├── campaign_edit.md
+│   ├── campaign_next.md
+│   ├── campaign_status.md
+│   ├── capture.md
+│   ├── cleanup.md
+│   ├── dogfood.md
 │   ├── execute.md
+│   ├── fix.md
+│   ├── plan.md
 │   ├── review.md
 │   ├── review_feature.md
-│   ├── fix.md
-│   ├── capture.md
-│   ├── dogfood.md
-│   └── cleanup.md
-├── skills/               # Automatic skills
+│   └── technical_review.md
+├── skills/               # 15 automatic skills
 │   ├── brainstorming/
-│   ├── planning/
-│   ├── technical-review/
-│   ├── execution-checkpoints/
-│   ├── finishing-a-development-branch/
-│   ├── test-driven-development/
-│   ├── review/
-│   ├── review-feature/
-│   ├── fix/
+│   ├── campaign-management/
 │   ├── capture/
 │   ├── dogfood/
-│   └── milestone-tracker/
-├── templates/            # Document templates
+│   ├── execution-checkpoints/
+│   ├── finishing-a-development-branch/
+│   ├── fix/
+│   ├── java-spring-boot/
+│   ├── milestone-tracker/
+│   ├── planning/
+│   ├── review/
+│   ├── review-feature/
+│   ├── technical-review/
+│   ├── test-driven-development/
+│   └── typescript-expert/
+├── templates/            # 7 document templates
+│   ├── campaign.md
+│   ├── code-quality-review.md
+│   ├── milestone.md
 │   ├── plan.md
 │   ├── review.md
-│   ├── milestone.md
-│   └── solution.md
+│   ├── solution.md
+│   └── spec-compliance-review.md
 ├── CLAUDE.md             # Code simplicity principle
 └── README.md
 ```
