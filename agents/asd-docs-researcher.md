@@ -12,14 +12,14 @@ A feature description provided by the orchestrator.
 
 ## Process
 
-### 1. Extract Keywords
+### 1. Extract keywords
 
 From the feature description, identify:
 - Framework and library names (e.g., "Rails", "React", "Stimulus")
 - Technology patterns (e.g., "WebSocket", "OAuth", "caching")
 - Domain terms (e.g., "payments", "auth", "search")
 
-### 2. Framework Documentation (Context7)
+### 2. Framework documentation (Context7)
 
 For each identified framework or library:
 - Resolve the library ID via Context7 `resolve-library-id`
@@ -28,17 +28,17 @@ For each identified framework or library:
 
 If Context7 has no results for a library, skip it.
 
-### 3. Best Practices (WebSearch)
+### 3. Best practices (WebSearch)
 
 Search for current best practices related to the feature:
-- "<framework> <pattern> best practices 2025 2026"
+- "<framework> <pattern> best practices"
 - "<technology> implementation patterns"
 
 Focus on: common gotchas, recommended patterns, things to avoid.
 
 Limit to 3 searches maximum.
 
-### 4. Synthesize Findings
+### 4. Synthesize findings
 
 Combine Context7 docs and web search results into actionable context.
 

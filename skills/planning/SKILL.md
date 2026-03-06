@@ -1,112 +1,105 @@
 ---
 name: planning
-description: "Create implementation plans with research and bite-sized TDD tasks. Use when converting feature descriptions or brainstorm output into actionable plans."
+description: "Create implementation plans with research and bite-sized TDD tasks for multi-file features. Use PROACTIVELY when the user wants to plan before coding, break work into tasks, or convert ideas into actionable steps. Triggers: 'plan this', 'break this into tasks', 'create a plan', 'implementation plan', 'how should we implement', 'scaffold this feature', 'what's the approach for', 'let's break this down', 'plan before we start coding', 'concrete steps', or after brainstorming completes. Do NOT trigger for: executing existing plans, reviewing plans, bug fixes, brainstorming (use brainstorming skill instead), trivial single-file changes, code review, or deployment."
 ---
 
 # Planning
 
-Create validated implementation plans from ideas or brainstorm output. Plans combine strategic context with bite-sized TDD tasks in sequential order.
+Create validated implementation plans from ideas or brainstorm output.
 
-## When to Use
+## Phase 1: Input
 
-- User provides a feature description
-- After `/asd:brainstorm` completes
-- When converting requirements to actionable plans
+If brainstorm context exists in conversation, extract key decisions, approach, and constraints. Skip to Phase 2.
 
-## Language detection
+If a feature description was provided and is clear, confirm: "Description is clear. Proceed with research?"
 
-Before dispatching agents, detect the project language from file extensions and build files:
-- **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-*` agents
-- **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-*` agents
-- **Other or mixed:** use generic `asd-*` agents
-
-Agents run in clean contexts and cannot see skills. When dispatching specialized agents, include only the specific skill conventions relevant to the feature (e.g. testing patterns for a new endpoint, module system rules for a new package). Do not pass the entire skill - just the parts that help the agent do its job.
-
-## Phase 1: Input Resolution
-
-### 1a. Check for Brainstorm Context
-
-If invoked from `/asd:brainstorm`, design context is already available in the conversation. Extract: key decisions, approach, constraints, open questions. Skip to Phase 2.
-
-### 1b. Idea Refinement (if no brainstorm context)
-
-If the feature description is already detailed, offer: "Description is clear. Proceed with research?"
-
-Otherwise, ask questions one at a time via AskUserQuestion:
+Otherwise, ask one at a time via AskUserQuestion:
 - What problem does this solve?
 - Any constraints or dependencies?
-- How will you measure success?
 
-## Phase 2: Research (Parallel)
+## Phase 2: Parallel research
 
-**If brainstorm context exists** (codebase already scanned in brainstorm Phase 1):
-- Task asd-learnings-researcher(feature_description)
-- Task asd-docs-researcher(feature_description)
+Launch everything in a **single message with multiple tool calls**.
 
-**If no brainstorm context** (standalone `/asd:plan`):
-- Task asd-repo-researcher(feature_description)
-- Task asd-learnings-researcher(feature_description)
-- Task asd-docs-researcher(feature_description)
+### What to launch (all in one turn):
 
-Launch all applicable agents in parallel. Wait for all to return.
+**Three research agents** (all via Agent tool, all with `run_in_background: true`):
 
-### Scope check (after research)
+Agent 1 - `asd-repo-researcher`:
+```
+subagent_type: "asd:asd-repo-researcher"
+prompt: "Research codebase patterns for this feature: <feature_description>. Project root: <project_path>"
+```
 
-If the research reveals the change is too large for a single plan (10+ files across multiple modules, or multiple independent migration steps), suggest a campaign instead:
+Agent 2 - `asd-learnings-researcher`:
+```
+subagent_type: "asd:asd-learnings-researcher"
+prompt: "Search for relevant past solutions for: <feature_description>. Project root: <project_path>"
+```
 
-"This looks too big for a single plan - it spans [N files across M modules]. Want to create a campaign to break it into incremental steps instead?"
+Agent 3 - `asd-docs-researcher`:
+```
+subagent_type: "asd:asd-docs-researcher"
+prompt: "Research external docs and best practices for: <feature_description>"
+```
 
-If user agrees, invoke `/asd:campaign_create` and pass the research context so it doesn't re-analyze:
-- Feature description from user
-- Research findings from `asd-repo-researcher`
-- Any learnings from `asd-learnings-researcher`
+**If brainstorm context exists**, skip asd-repo-researcher (codebase was already scanned during brainstorm Phase 1). Dispatch only learnings + docs researchers.
 
-If user declines, continue with the plan (they may want to tackle a subset).
+All three agents go in a single message. Wait for all to complete.
 
-## Phase 3: Plan Generation
+### Scope check
 
-Dispatch the appropriate plan-writer (`asd-java-plan-writer`, `asd-ts-plan-writer`, or `asd-plan-writer`) with:
-- Feature description (and brainstorm context if available)
-- Raw research agent outputs from Phase 2 (pass them through, don't summarize)
-- Any constraints or decisions from user interaction
-- Plan file path: `docs/plans/YYYY-MM-DD-<type>-<name>-plan.md`
+If research reveals the change is too large for a single plan (10+ files across multiple modules), suggest a campaign:
 
-Filename rules:
-- Date prefix required
-- Type prefix after date (feat, fix, refactor)
-- Kebab-case, 3-5 descriptive words
-- End with `-plan.md`
+"This looks too big for a single plan - it spans [N files across M modules]. Want to create a campaign to break it into incremental steps?"
 
-The plan-writer runs in a clean context, reads the template and relevant source files, and writes the complete plan file.
+If user agrees, invoke `/asd:campaign_create` and pass the research context.
 
-### Campaign link (conditional)
+## Phase 3: Plan generation
 
-If the plan was invoked from `/asd:campaign_next`, the campaign context includes a campaign link: `<!-- campaign: docs/checklists/<name>.md#<item-number> -->`.
+Dispatch `asd-plan-writer` via the Agent tool with everything pre-resolved:
 
-Add this comment immediately after the closing `---` of the frontmatter (before the `#` title). This is how `execution-checkpoints` links the plan back to the campaign for auto-complete.
+```
+subagent_type: "asd:asd-plan-writer"
+prompt: |
+  Write an implementation plan for this feature.
 
-## Phase 4: Validate and Next Steps
+  Feature: <feature_description>
+  Brainstorm context: <if available>
+  Project root: <project_path>
+  Plan file path: docs/plans/YYYY-MM-DD-<type>-<name>-plan.md
+  Template path: templates/plan.md
+  Campaign link: <if from campaign_next>
 
-### 4a. Agent Validation
+  Research findings:
+  <paste agent summaries here - they are already concise>
 
-Dispatch the `asd-plan-validator` agent on the written plan.
+  Constraints: <any from user interaction>
+```
 
-If validator returns critical issues:
-- Re-dispatch `asd-plan-writer` with the validator feedback and the current plan path (max 2 iterations)
-- Warnings are noted but don't block
+The repo-researcher's output includes detected language and project file contents - pass it through so the plan-writer doesn't re-read them.
 
-### 4b. Next Steps
+Filename rules: date prefix, type (feat/fix/refactor), kebab-case 3-5 words, end with `-plan.md`.
 
-Use AskUserQuestion to present options:
+## Phase 4: Validate and finish
 
-1. **Review** (Recommended) → `/asd:technical_review docs/plans/<filename>`
-2. **Execute** → `/asd:execute docs/plans/<filename>`
-3. **Refine** → Improve specific sections
+Dispatch `asd-plan-validator` via the Agent tool on the written plan file:
 
-## Key Principles
+```
+subagent_type: "asd:asd-plan-validator"
+prompt: "Validate this plan: <plan_file_path>"
+```
 
-- **Validate after writing** - Plans must pass agent validation
-- **YAGNI** - Scale plan to scope, no more
-- **Testable criteria** - Every acceptance criterion must be verifiable
-- **Zero-context tasks** - Engineer needs no prior codebase knowledge
-- **DRY** - No duplicate information across plan sections
+If validator returns critical issues, re-dispatch `asd-plan-writer` with validator feedback and the current plan path. Max 2 iterations.
+
+Present options via AskUserQuestion:
+1. **Review** (recommended) - `/asd:technical_review docs/plans/<filename>`
+2. **Execute** - `/asd:execute docs/plans/<filename>`
+3. **Refine** - Improve specific sections
+
+## Principles
+
+- **Context hygiene** - Research agents run in their own contexts and return summaries. Main context stays lean.
+- **Parallel by default** - Every independent task runs simultaneously in a single message.
+- **No redundant reads** - Repo-researcher returns language, project config, and patterns. Plan-writer uses these summaries instead of re-reading the same files.
+- **YAGNI** - Scale plan to scope. Small changes get small plans.
