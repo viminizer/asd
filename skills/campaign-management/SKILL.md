@@ -25,16 +25,17 @@ When no file path is given:
 1. Ask the user to describe the big change (use `$ARGUMENTS` if provided)
 2. Run `mkdir -p docs/checklists/`
 3. If research context was passed from a brainstorming or planning escalation, use it. Otherwise dispatch `asd-campaign-researcher` to explore the codebase in depth (it runs parallel searches for structure, usage patterns, and dependencies, returning a structured module breakdown).
-4. Analyze scope and suggest an incremental approach (e.g. "migrate by module" or "migrate by feature area")
-5. Present the approach and ask the user to confirm
-6. Generate ordered checklist items. Each item includes:
+4. If research finds no matching files or patterns, tell the user the change doesn't apply to this codebase. Do not fabricate items for files that don't exist. Stop here.
+5. Analyze scope and suggest an incremental approach (e.g. "migrate by module" or "migrate by feature area"). Aim for 3-8 items - group related files into logical units rather than listing one item per file.
+6. Present the approach and ask the user to confirm before generating
+7. Generate ordered checklist items. Each item includes:
    - Description of what to do
    - Scope: specific files or glob patterns from researcher output
    - Effort: small (1-3 files), medium (4-8 files), large (9+ files)
    - Dependencies: item numbers that must be done first
-7. Read `templates/campaign.md` for structure reference
-8. Save to `docs/checklists/<kebab-case-name>.md`
-9. Commit the file
+8. Read `templates/campaign.md` for structure reference
+9. Save to `docs/checklists/<kebab-case-name>.md`
+10. Commit the file
 
 ## Phase: Edit
 

@@ -33,6 +33,7 @@ Dispatch three searches in parallel:
 - For each match, note the file path and a brief context line
 - Search for variations of the pattern (aliases, re-exports, wrapper functions)
 - Count occurrences per file to estimate effort
+- Look for inconsistencies: files that reference the pattern in metadata but not in their body (or vice versa), mismatched declarations, or broken integrations
 
 **C) Dependency mapping
 - For files found in the usage search, grep for their imports/exports
@@ -90,9 +91,10 @@ Return exactly this structure:
 
 ## Rules
 
-- Never read more than 3 files total - rely on Glob and Grep
+- Prefer Glob and Grep over reading files - only read a file when its structure can't be inferred from search results
 - Use `files_with_matches` mode for initial grep passes
 - Run searches in parallel to minimize latency
 - Return file paths and counts, not file contents
 - Group results for easy checklist conversion
 - If the codebase is small (< 50 files total), note that a campaign may be overkill
+- If no matches are found for the target pattern, report that clearly - do not invent files or modules
