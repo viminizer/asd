@@ -1,35 +1,28 @@
 ---
 date: YYYY-MM-DD
 topic: <kebab-case-topic>
-type: bugfix|feature|learning
+tags: [keyword1, keyword2]
 ---
 
 # <Title>
 
 ## Problem
-[What was the issue? Describe clearly.]
+What the challenge was. For bugs: what went wrong and how it manifested. For features: what was missing or limiting. Be specific enough that someone searching would recognize it.
 
-## Symptoms
-- Symptom 1
-- Symptom 2
-- Symptom 3
-
-## Root Cause
-[Why did this happen? Be specific about the underlying cause.]
+## Root cause
+Why this was hard or why it broke. Focus on the underlying cause, not the surface issue.
 
 ## Solution
-[How was it fixed? Include relevant code if helpful.]
+What was done. Include file paths, code snippets, and config changes as needed.
 
 ```<language>
-// Code example if applicable
+// Key code changes if applicable
 ```
 
 ## Prevention
-[How to prevent recurrence?]
-- [Prevention strategy 1]
-- [Prevention strategy 2]
+How to avoid this in the future.
+- Prevention strategy 1
+- Prevention strategy 2
 
 ## Related
-- [Related solution: docs/solutions/...]
-- [Related issue: #123]
-- [Related PR: #456]
+- docs/solutions/YYYY-MM-DD-related-topic.md
