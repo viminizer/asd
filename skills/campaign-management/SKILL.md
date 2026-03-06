@@ -1,21 +1,20 @@
 ---
 name: campaign-management
-description: "Manage campaigns for tracking big changes across multiple plans. Handles create, edit, next, and status operations."
+description: >
+  Internal skill invoked by campaign commands (/asd:campaign_create, /asd:campaign_edit,
+  /asd:campaign_next, /asd:campaign_status). Do not auto-trigger - only activate when
+  a campaign command delegates to this skill with an <operation> tag.
 ---
 
 # Campaign management
 
 Track large, multi-plan changes through ordered checklists. The invoking command passes `<operation>create|edit|next|status</operation>` and optional arguments.
 
-## When to use
-
-Invoked by campaign commands (`/asd:campaign_create`, `/asd:campaign_next`, etc.). Do not auto-trigger.
-
 ## Campaign discovery
 
 When no file path is given:
 
-1. List markdown files in `docs/checklists/` (exclude `archive/`)
+1. List markdown files in `docs/campaigns/` (exclude `archive/`)
 2. If exactly one has `status: in-progress`, use it automatically
 3. If multiple, show the list and ask the user to choose
 4. If none, tell the user to run `/asd:campaign_create`
@@ -23,7 +22,7 @@ When no file path is given:
 ## Phase: Create
 
 1. Ask the user to describe the big change (use `$ARGUMENTS` if provided)
-2. Run `mkdir -p docs/checklists/`
+2. Run `mkdir -p docs/campaigns/`
 3. If research context was passed from a brainstorming or planning escalation, use it. Otherwise dispatch `asd-campaign-researcher` to explore the codebase in depth (it runs parallel searches for structure, usage patterns, and dependencies, returning a structured module breakdown).
 4. If research finds no matching files or patterns, tell the user the change doesn't apply to this codebase. Do not fabricate items for files that don't exist. Stop here.
 5. Analyze scope and suggest an incremental approach (e.g. "migrate by module" or "migrate by feature area"). Aim for 3-8 items - group related files into logical units rather than listing one item per file.
@@ -34,7 +33,7 @@ When no file path is given:
    - Effort: small (1-3 files), medium (4-8 files), large (9+ files)
    - Dependencies: item numbers that must be done first
 8. Read `templates/campaign.md` for structure reference
-9. Save to `docs/checklists/<kebab-case-name>.md`
+9. Save to `docs/campaigns/<kebab-case-name>.md`
 10. Commit the file
 
 ## Phase: Edit
@@ -52,11 +51,11 @@ When no file path is given:
 2. Find eligible items: `status: pending` AND all items listed in `Depends on` have `status: done`
 3. Recommend the first eligible item by number; show all eligible items and let the user pick
 4. Mark selected item as `in-progress`, update `updated` date in frontmatter, update the `Progress` line, commit
-5. Invoke `/asd:plan` with the item description and scope as the feature description, plus a note to add `<!-- campaign: docs/checklists/<name>.md#<item-number> -->` at the top of the generated plan file
+5. Invoke `/asd:plan` with the item description and scope as the feature description, plus a note to add `<!-- campaign: docs/campaigns/<name>.md#<item-number> -->` at the top of the generated plan file
 
 ## Phase: Status
 
-1. List all campaign files in `docs/checklists/` (exclude `archive/`)
+1. List all campaign files in `docs/campaigns/` (exclude `archive/`)
 2. For each campaign, show:
    - Campaign title
    - Progress: X/Y done (Z%)

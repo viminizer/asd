@@ -1,19 +1,16 @@
 ---
 name: asd:campaign_next
-description: "Pick the next campaign item and create a plan for it."
+description: >
+  Pick the next eligible campaign item and create an implementation plan for it.
+  Use when the user wants to start working on the next piece of a campaign, continue a campaign,
+  or says things like "what's next", "next campaign item", "pick next task", "continue the migration".
+  Do NOT use for creating campaigns, editing items, or checking status.
 argument-hint: "[campaign file path]"
 ---
 
 # /asd:campaign_next
 
 Select the next eligible campaign item and generate an implementation plan.
-
-## What it does
-
-1. **Find** - Campaign from argument or auto-detect in-progress
-2. **Show** - Eligible items (pending + dependencies met)
-3. **Pick** - User selects an item
-4. **Plan** - Mark as in-progress, invoke `/asd:plan` with item context
 
 ## Campaign file
 
@@ -24,8 +21,6 @@ Select the next eligible campaign item and generate an implementation plan.
 ## Execution
 
 Invoke the `campaign-management` skill with `<operation>next</operation>`.
-
-The skill passes item description + scope to `/asd:plan` and instructs it to include `<!-- campaign: docs/checklists/<name>.md#<item-number> -->` at the top of the plan file.
 
 ## Next step
 

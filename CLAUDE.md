@@ -21,3 +21,4 @@ The goal is not fewer lines - the goal is less unnecessary complexity.
 - Language-specific skills and agents are dispatched conditionally - only when the project language is detected and the task benefits from specialization.
 - Generic agents handle most work. Specialized agents are for cases where domain knowledge materially improves the output.
 - Skill descriptions must be specific enough to avoid false-positive auto-triggers.
+- When updating the version, bump it in both `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.

@@ -19,7 +19,7 @@ Break big changes into incremental, trackable campaigns.
 1. **Input** - Describe the big change (or use `$ARGUMENTS`). If research context was passed from a brainstorming or planning escalation, skip step 2.
 2. **Research** - Analyze codebase scope via `asd-campaign-researcher`
 3. **Generate** - Ordered checklist with scope, effort, and dependencies
-4. **Save** - Campaign file at `docs/checklists/<name>.md`
+4. **Save** - Campaign file at `docs/campaigns/<name>.md`
 
 ## Change description
 
@@ -33,7 +33,7 @@ Invoke the `campaign-management` skill with `<operation>create</operation>`.
 
 ## Output
 
-Campaign file at `docs/checklists/<name>.md`
+Campaign file at `docs/campaigns/<name>.md`
 
 ## Next step
 
