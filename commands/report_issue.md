@@ -20,36 +20,14 @@ If `$ARGUMENTS` is empty, ask: "What would you like to report?"
 
 Then ask the user to pick a type:
 - **Bug** - Something isn't working as expected
-- **Feature** - Request a new capability
+- **Enhancement** - Request a new capability
 - **Feedback** - General suggestion or comment
 
 ### 2. Draft the issue
 
-Based on the type, draft the issue:
+Read `templates/issue.md` for structure. Use the section matching the chosen type. Fill in the fields by asking the user for any missing details.
 
-**Bug:**
-```markdown
-## What happened
-[User's description]
-
-## Expected behavior
-[Ask if not obvious]
-
-## Steps to reproduce
-[Ask user or infer from description]
-
-## Environment
-- asd version: [read from .claude-plugin/plugin.json]
-```
-
-**Feature / Feedback:**
-```markdown
-## Description
-[User's description]
-
-## Use case
-[Why this would be useful - ask if not clear]
-```
+For bugs, read the asd version from `.claude-plugin/plugin.json` to populate the environment field.
 
 ### 3. Confirm and submit
 

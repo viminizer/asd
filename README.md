@@ -18,7 +18,7 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 | Commands | 15 |
 | Skills | 15 |
 | Agents | 19 |
-| Templates | 7 |
+| Templates | 8 |
 
 ## Commands
 
@@ -158,9 +158,10 @@ asd/
 │   ├── technical-review/
 │   ├── test-driven-development/
 │   └── typescript-expert/
-├── templates/            # 7 document templates
+├── templates/            # 8 document templates
 │   ├── campaign.md
 │   ├── code-quality-review.md
+│   ├── issue.md
 │   ├── milestone.md
 │   ├── plan.md
 │   ├── review.md
