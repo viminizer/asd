@@ -54,20 +54,50 @@ Recommended passes from diff analysis: [passes from Phase 2]
 Skip passes marked as not needed.
 ```
 
-## Phase 4: Next steps
+## Phase 4: Write review file
+
+Save findings to `docs/reviews/`. Skip this phase if no issues were found.
+
+### File naming
+
+| Target | Filename |
+|--------|----------|
+| PR #123 "Add auth" | `pr-123-add-auth-pending.md` |
+| Branch `feature-login` | `feature-login-pending.md` |
+
+Slugify the PR title or branch name (lowercase, hyphens, no special chars).
+
+### Check for existing file
+
+Before creating a new file, check if a `*-pending.md` file already exists for the same PR/branch in `docs/reviews/`. If found, update it in place with the latest findings instead of creating a new one.
+
+### Auto-complete on re-review
+
+When re-reviewing a target that has an existing pending file and all previously reported issues are now resolved, rename the file from `*-pending.md` to `*-completed.md`.
+
+### File content
+
+Use the `templates/review.md` template. Add to the frontmatter:
+
+- `status: pending` or `status: completed`
+- `pr: {number}` (if applicable)
+- `branch: {branch-name}`
+
+## Phase 5: Next steps
 
 Based on findings, use AskUserQuestion:
 
-- **Critical issues found:**
-  1. **Fix issues** → Address critical items, then re-review
-  2. **Request human review** → Flag for team member
-- **Warnings only:**
-  1. **Fix warnings** → Address items, then re-review
-  2. **Merge anyway** → Proceed with merge/PR
+- **Issues found** (file created):
+  1. **Fix issues now** → Address items, then re-review with `/asd:review`
+  2. **Fix later** → Review file saved, work on it when ready
   3. **Request human review** → Flag for team member
-- **Clean:**
+- **Clean** (no file created):
   1. **Merge/PR** → Proceed with integration
   2. **Capture** → `/asd:capture` to document solutions
+- **All issues resolved** (file marked completed):
+  1. **Merge/PR** → Proceed with integration
+  2. **Clean up** → Delete completed review file
+  3. **Capture** → `/asd:capture` to document solutions
 
 ## Protected artifacts
 

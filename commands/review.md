@@ -23,7 +23,7 @@ Review code changes with systematic analysis.
 
 1. **Determine target** - Identify what to review based on input
 2. **Review** - Dispatch appropriate reviewer in diff mode
-3. **Report** - Present issues by severity
+3. **Save findings** - Write review file to `docs/reviews/` (skipped if clean)
 4. **Next steps** - Fix issues, merge, or request human review
 
 ## Execution
@@ -32,7 +32,7 @@ Invoke the `review` skill and follow it exactly.
 
 ## Output
 
-Review report with issues grouped by severity (critical, warning, suggestion).
+Review file in `docs/reviews/` with issues grouped by severity. Naming: `pr-{number}-{title}-pending.md` or `{branch}-pending.md`. On re-review, updates existing pending files. Auto-renames to `*-completed.md` when all issues are resolved. No file created if review is clean.
 
 ## Next step
 
