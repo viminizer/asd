@@ -13,6 +13,13 @@ Review an existing feature's full implementation across backend and frontend.
 - Before refactoring a feature
 - When onboarding to understand a feature's health
 
+## Language detection
+
+Before dispatching agents, detect the project language from file extensions and build files:
+- **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-reviewer`
+- **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-reviewer`
+- **Other or mixed:** use `asd-code-reviewer`
+
 ## Phase 1: Identify scope
 
 Dispatch the `asd-file-scoper` agent (haiku) to find all related files:
@@ -27,7 +34,7 @@ Present the returned file list to the user and ask: "These are the files I found
 
 ## Phase 2: Review
 
-Dispatch the `asd-code-reviewer` agent in audit mode:
+Dispatch the appropriate reviewer (`asd-java-reviewer`, `asd-ts-reviewer`, or `asd-code-reviewer`) in audit mode:
 
 ```
 Review scope: feature audit

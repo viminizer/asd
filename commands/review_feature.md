@@ -17,7 +17,7 @@ Review an existing feature's implementation across backend and frontend. Produce
 ## What it does
 
 1. **Find** - Search codebase for all files related to the feature
-2. **Review** - Dispatch `asd-code-reviewer` in audit mode with feature description
+2. **Review** - Dispatch appropriate reviewer in audit mode with feature description
 3. **Write** - Save review to `docs/reviews/YYYY-MM-DD-<feature-name>.md`
 4. **Next steps** - Offer to fix issues found
 
