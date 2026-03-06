@@ -8,27 +8,13 @@ argument-hint: "[plan file path]"
 
 Review an implementation plan before executing it. Checks document quality, technical soundness, and implementation feasibility.
 
-## What it does
+## Execution
 
-1. **Plan quality** - Clarity, completeness, specificity, YAGNI, unstated assumptions
-2. **Technical soundness** - Dispatch appropriate reviewer on the plan's approach
-3. **Implementation feasibility** - Task ordering, dependencies, file paths, realistic scope
-4. **Learnings check** - Cross-reference past solutions if `docs/solutions/` exists
-5. **Report** - Issues by severity, then offer next steps
+Invoke the `technical-review` skill and follow it exactly.
 
 ## Output
 
-Review report with issues grouped by severity (critical, warning, suggestion), then a plan score:
-
-| Criteria | Score |
-|---|---|
-| Clarity | _/10 |
-| Completeness | _/10 |
-| Specificity | _/10 |
-| YAGNI | _/10 |
-| Technical soundness | _/10 |
-| Implementation feasibility | _/10 |
-| **Overall** | _/10 |
+Review report with issues grouped by severity (critical, warning, suggestion), plus a plan score (1-10).
 
 Next steps based on findings and score:
 
