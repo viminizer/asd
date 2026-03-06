@@ -20,17 +20,6 @@ Do not proceed until you have a feature description from the user.
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
 </HARD-GATE>
 
-## Task Tracking
-
-Create one task per phase at the start of the brainstorming session:
-
-1. Explore project context
-2. Ask clarifying questions
-3. Propose approaches
-4. Present and validate design
-
-Mark each task `in_progress` when starting, `completed` when done.
-
 ## Execution Flow
 
 ### Phase 1: Explore Project Context
@@ -45,15 +34,9 @@ Use **AskUserQuestion tool** to suggest: "Your requirements seem detailed enough
 
 ### Phase 2: Collaborative Dialogue
 
-Use the **AskUserQuestion tool** to ask questions **one at a time**.
+Use the **AskUserQuestion tool** to ask questions **one at a time**. See the `brainstorming` skill for detailed questioning techniques.
 
-**Guidelines (see `brainstorming` skill for detailed techniques):**
-- Prefer multiple choice when natural options exist
-- Start broad (purpose, users) then narrow (constraints, edge cases)
-- Validate assumptions explicitly
-- Ask about success criteria early
-
-**Exit condition:** Continue until the idea is clear OR user says "proceed"
+**Stop asking when you can propose concrete approaches.** Signals: core problem is clear, users and context are understood, key constraints are identified. Aim for 4-7 questions for typical features, fewer for simple ones. If the user says "proceed" or seems ready to move on, stop asking.
 
 ### Phase 3: Explore Approaches
 
@@ -65,6 +48,8 @@ Dispatch the `asd-approach-proposer` agent with:
 The agent analyzes trade-offs and returns 2-3 concrete approaches with a recommendation.
 
 Present the agent's approaches to the user and use **AskUserQuestion tool** to ask which approach they prefer.
+
+If the chosen approach involves multiple independent phases or incremental migration, mention that a campaign might help and ask if they're interested. If so, invoke `/asd:campaign_create` with the brainstorm context. If not, continue to Phase 4.
 
 ### Phase 4: Present and Validate Design
 
@@ -90,13 +75,13 @@ Use **AskUserQuestion tool** to confirm:
 **Options:**
 1. **Proceed to planning** — Invoke `/asd:plan` now
 2. **Ask more questions** — Probe deeper into edge cases, constraints, or unexplored areas
-3. **Done for now** — Stop here
+3. **Done for now** — Save decisions and stop
 
 **If user selects "Ask more questions":** Return to Phase 2 (Collaborative Dialogue) and continue asking questions one at a time. When satisfied, return to Phase 5.
 
 **If user selects "Proceed to planning":** Summarize the key decisions, then immediately invoke `/asd:plan` passing the design context. Do NOT wait for the user to run it manually.
 
-**If user selects "Done for now":** Display the key decisions summary and stop.
+**If user selects "Done for now":** Write a brief design summary to `docs/brainstorms/<feature-name>.md` with: what we're building, chosen approach, key decisions, and open questions. Tell the user where it's saved so they can resume later.
 
 ## Important Guidelines
 
