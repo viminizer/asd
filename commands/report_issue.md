@@ -23,13 +23,28 @@ Then ask the user to pick a type:
 - **Enhancement** - Request a new capability
 - **Feedback** - General suggestion or comment
 
-### 2. Draft the issue
+### 2. Clarify before drafting
 
-Read `templates/issue.md` for structure. Use the section matching the chosen type. Fill in the fields by asking the user for any missing details.
+Ask follow-up questions **one at a time** until you have enough detail to fill the template. Don't draft until you understand the issue.
 
-For bugs, read the asd version from `.claude-plugin/plugin.json` to populate the environment field.
+**For bugs**, make sure you know:
+- What happened vs what they expected
+- Steps to reproduce (or at least what they were doing)
+- Read the asd version from `.claude-plugin/plugin.json` for the environment field
 
-### 3. Confirm and submit
+**For enhancements**, make sure you know:
+- What they want and why
+- How they'd use it (the use case)
+
+**For feedback**, a clear description is enough.
+
+Skip questions if the user's description already covers them.
+
+### 3. Draft the issue
+
+Read `templates/issue.md` for structure. Use the section matching the chosen type.
+
+### 4. Confirm and submit
 
 Show the draft title and body to the user. Ask: "Submit this issue?"
 
@@ -40,6 +55,6 @@ gh issue create --repo viminizer/asd --title "<title>" --label "<type>" --body "
 
 Labels: `bug`, `enhancement`, or `feedback` (matching the type).
 
-### 4. Done
+### 5. Done
 
 Print the issue URL.
