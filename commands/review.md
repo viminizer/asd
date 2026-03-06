@@ -22,7 +22,7 @@ Review code changes with systematic analysis.
 ## What it does
 
 1. **Determine target** - Identify what to review based on input
-2. **Review** - Dispatch `asd-code-reviewer` in diff mode
+2. **Review** - Dispatch appropriate reviewer in diff mode
 3. **Report** - Present issues by severity
 4. **Next steps** - Fix issues, merge, or request human review
 

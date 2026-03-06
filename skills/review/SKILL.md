@@ -13,6 +13,13 @@ Review code changes by dispatching the `asd-code-reviewer` agent in diff mode.
 - Before creating or merging a PR
 - During PR review
 
+## Language detection
+
+Before dispatching agents, detect the project language from file extensions, build files, and the diff context:
+- **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-reviewer`
+- **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-reviewer`
+- **Other or mixed:** use `asd-code-reviewer`
+
 ## Phase 1: Determine target
 
 | Input | Action |
@@ -36,7 +43,7 @@ Summarize changes and recommend which review passes to run.
 
 ## Phase 3: Review
 
-Dispatch the `asd-code-reviewer` agent in diff mode, passing the diff-analyzer's recommendations:
+Dispatch the appropriate reviewer (`asd-java-reviewer`, `asd-ts-reviewer`, or `asd-code-reviewer`) in diff mode, passing the diff-analyzer's recommendations:
 
 ```
 Review scope: diff review
