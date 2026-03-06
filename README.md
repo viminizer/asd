@@ -15,7 +15,7 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 
 | Component | Count |
 |-----------|-------|
-| Commands | 14 |
+| Commands | 15 |
 | Skills | 15 |
 | Agents | 19 |
 | Templates | 7 |
@@ -34,6 +34,7 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 | `/asd:capture` | Document solved problems for knowledge compounding |
 | `/asd:dogfood` | QA a web app - find bugs and UX issues |
 | `/asd:cleanup` | Archive completed plans and old reviews |
+| `/asd:report_issue` | Report a bug, request a feature, or give feedback |
 | `/asd:campaign_create` | Create a campaign to track a big change across multiple plans |
 | `/asd:campaign_edit` | Add, remove, or reorder items in a campaign |
 | `/asd:campaign_next` | Pick the next campaign item and create a plan for it |
@@ -125,7 +126,7 @@ asd/
 │   ├── asd-ts-investigator.md
 │   ├── asd-ts-plan-writer.md
 │   └── asd-ts-reviewer.md
-├── commands/             # 14 /asd:* commands
+├── commands/             # 15 /asd:* commands
 │   ├── brainstorm.md
 │   ├── campaign_create.md
 │   ├── campaign_edit.md
@@ -137,6 +138,7 @@ asd/
 │   ├── execute.md
 │   ├── fix.md
 │   ├── plan.md
+│   ├── report_issue.md
 │   ├── review.md
 │   ├── review_feature.md
 │   └── technical_review.md
