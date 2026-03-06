@@ -17,7 +17,7 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 |-----------|-------|
 | Commands | 16 |
 | Skills | 15 |
-| Agents | 19 |
+| Agents | 17 |
 | Templates | 8 |
 
 ## Commands
@@ -74,14 +74,12 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 | `asd-file-scoper` | Find all files related to a feature for review scope (haiku) |
 | `asd-test-runner` | Run tests and return concise pass/fail summary (haiku) |
 | `asd-plan-validator` | Validate plan structure, task ordering, and feasibility (haiku) |
-| `asd-plan-writer` | Write implementation plans from research context |
+| `asd-plan-writer` | Write implementation plans from research context (handles Java, TS/JS, Python, and generic) |
 | `asd-approach-proposer` | Propose 2-3 implementation approaches with trade-offs |
 | `asd-investigator` | Deep root cause investigation for bug fixes |
 | `asd-campaign-researcher` | Parallel codebase exploration for campaign creation |
-| `asd-java-plan-writer` | Java/Spring-specialized plan writer |
 | `asd-java-reviewer` | Java/Spring-specialized code reviewer |
 | `asd-java-investigator` | Java/Spring-specialized root cause investigator |
-| `asd-ts-plan-writer` | TypeScript/JavaScript-specialized plan writer |
 | `asd-ts-reviewer` | TypeScript/JavaScript-specialized code reviewer |
 | `asd-ts-investigator` | TypeScript/JavaScript-specialized root cause investigator |
 
@@ -107,7 +105,7 @@ Side workflows:
 ```
 asd/
 ├── .claude-plugin/       # Plugin metadata
-├── agents/               # 19 specialized agents
+├── agents/               # 17 specialized agents
 │   ├── asd-approach-proposer.md
 │   ├── asd-campaign-researcher.md
 │   ├── asd-code-reviewer.md
@@ -117,7 +115,6 @@ asd/
 │   ├── asd-forge.md
 │   ├── asd-investigator.md
 │   ├── asd-java-investigator.md
-│   ├── asd-java-plan-writer.md
 │   ├── asd-java-reviewer.md
 │   ├── asd-learnings-researcher.md
 │   ├── asd-plan-validator.md
@@ -125,7 +122,6 @@ asd/
 │   ├── asd-repo-researcher.md
 │   ├── asd-test-runner.md
 │   ├── asd-ts-investigator.md
-│   ├── asd-ts-plan-writer.md
 │   └── asd-ts-reviewer.md
 ├── commands/             # 16 /asd:* commands
 │   ├── brainstorm.md

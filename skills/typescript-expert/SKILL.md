@@ -5,7 +5,7 @@ description: "TypeScript/JavaScript conventions and best practices. Load only wh
 
 # TypeScript/JavaScript best practices
 
-Reference knowledge for writing idiomatic TypeScript/JavaScript applications (React frontend, Node.js backend). This skill provides reference knowledge for the specialized TS agents (`asd-ts-reviewer`, `asd-ts-investigator`, `asd-ts-plan-writer`).
+Reference knowledge for writing idiomatic TypeScript/JavaScript applications (React frontend, Node.js backend). This skill provides reference knowledge for the specialized TS agents (`asd-ts-reviewer`, `asd-ts-investigator`) and the consolidated `asd-plan-writer` (which handles TS/JS conventions when language is detected as TypeScript).
 
 ## Specialist referral
 

@@ -5,7 +5,7 @@ description: "Spring Boot conventions and best practices. Load only when activel
 
 # Spring Boot best practices
 
-Reference knowledge for writing idiomatic Spring Boot applications. This skill provides reference knowledge for the specialized Java agents (`asd-java-reviewer`, `asd-java-investigator`, `asd-java-plan-writer`).
+Reference knowledge for writing idiomatic Spring Boot applications. This skill provides reference knowledge for the specialized Java agents (`asd-java-reviewer`, `asd-java-investigator`) and the consolidated `asd-plan-writer` (which handles Java conventions when language is detected as Java).
 
 ## Project structure
 

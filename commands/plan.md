@@ -8,15 +8,15 @@ argument-hint: "[feature description]"
 
 Transform feature descriptions into validated implementation plans.
 
-## What It Does
+## What it does
 
 1. **Input** - Use brainstorm context if available, or refine idea with user
-2. **Research** - Parallel research via `asd-repo-researcher` + `asd-learnings-researcher` + `asd-docs-researcher`
-3. **Plan** - Strategic overview + sequential bite-sized TDD tasks
-4. **Validate + Write** - Agent validation via `asd-plan-validator`, save to `docs/plans/`
+2. **Research** - Parallel: `asd-repo-researcher` + `asd-learnings-researcher` + `asd-docs-researcher` + language detection (all in one turn)
+3. **Plan** - `asd-plan-writer` receives all context pre-resolved (language, research summaries, template path)
+4. **Validate** - `asd-plan-validator` checks the written plan
 5. **Next** - Offer: Review (recommended) / Execute / Refine
 
-## Feature Description
+## Feature description
 
 <feature_description> #$ARGUMENTS </feature_description>
 
@@ -30,6 +30,6 @@ Invoke the `planning` skill and follow it exactly.
 
 Plan at `docs/plans/YYYY-MM-DD-<type>-<name>-plan.md`
 
-## Next Step
+## Next step
 
-After plan is written → `/asd:technical_review` (recommended) or `/asd:execute`
+After plan is written: `/asd:technical_review` (recommended) or `/asd:execute`
