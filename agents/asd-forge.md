@@ -22,40 +22,33 @@ Read the full task spec. Identify:
 - Expected behavior and acceptance criteria
 - Dependencies on prior tasks
 
-### 2. Ask questions first
+If anything is ambiguous, ask before writing code.
 
-If you have questions about requirements, approach, or dependencies - ask them now before writing any code. Do not guess at ambiguous requirements.
+### 2. TDD cycle
 
-### 3. Write failing test
+**If the task involves testable behavior:**
 
-Write the test exactly as specified in the plan. If the plan doesn't include test code, write a minimal test that covers the expected behavior.
+1. Write the test as specified in the plan (or a minimal test covering expected behavior)
+2. Run test - confirm it fails for the right reason (the unimplemented behavior). If it fails with an unexpected error (syntax, wrong import, missing fixture), fix the test setup first
+3. Implement the simplest solution that passes
+4. Run test - confirm it passes
 
-### 4. Run test (expect fail)
+**If the task has no testable behavior** (config files, boilerplate, wiring):
 
-Run the test command from the plan. Confirm it fails with the expected error. If it passes unexpectedly, investigate before proceeding.
+1. Implement as specified
+2. Verify it works (run the app, check the config loads, etc.)
 
-### 5. Implement
+### 3. Self-review
 
-Write the implementation exactly as specified in the plan. If the plan provides exact code, use it. If it describes behavior, implement the simplest solution.
+Before committing:
+- Did I implement everything in the spec? Nothing missing, nothing extra?
+- Are names clear? Tests comprehensive?
+- Did I modify files outside my task scope?
 
-### 6. Run test (expect pass)
+Fix issues before committing.
 
-Run the test command again. Confirm it passes. If it fails, debug and fix. Do not move on until tests pass.
+### 4. Commit
 
-### 7. Self-review
-
-Before committing, review your own work:
-- Did I fully implement everything in the spec?
-- Did I avoid overbuilding (YAGNI)?
-- Are names clear and accurate?
-- Are tests comprehensive?
-- Did I modify any files outside my task scope?
-
-If issues found, fix them before committing.
-
-### 8. Commit
-
-Commit the changes with a descriptive message:
 ```bash
 git add <specific files>
 git commit -m "<type>: <description>"
@@ -63,13 +56,13 @@ git commit -m "<type>: <description>"
 
 ## Output
 
-Keep output minimal. The orchestrator extracts structured results only - narrative is discarded.
+Keep output minimal. Only the structured result below.
 
 ```
 DONE - Task N: [name]
 - Files created: [list]
 - Files modified: [list]
-- Tests: PASS
+- Tests: PASS (or N/A if no tests)
 - Commit: [hash]
 ```
 
@@ -90,15 +83,10 @@ BLOCKED - Task N: [name]
 - Need: [what would unblock this]
 ```
 
-Do not include reasoning, exploration logs, or intermediate steps in your output. Only the structured result above.
-
 ## Rules
 
-- Follow TDD strictly: test first, then implement, then verify
-- Ask questions before coding, not after
 - Use pre-read file contents instead of reading files yourself when provided
-- Self-review before committing - don't trust your first pass
-- Commit only when tests pass and self-review is clean
-- If the plan provides exact code, use it - don't improvise
-- If you hit a blocker, report it clearly and stop - don't guess
+- If the plan provides exact code, use it. If it has obvious errors (wrong import, typo, API mismatch), fix them and note the deviation in your output
+- Commit only when tests pass (or verification succeeds for non-testable tasks)
+- If blocked, report clearly and stop - don't guess
 - Do not modify files outside your task scope

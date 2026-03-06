@@ -156,15 +156,14 @@ asd/
 │   ├── technical-review/
 │   ├── test-driven-development/
 │   └── typescript-expert/
-├── templates/            # 8 document templates
+├── templates/            # 7 document templates
 │   ├── campaign.md
-│   ├── code-quality-review.md
 │   ├── issue.md
 │   ├── milestone.md
 │   ├── plan.md
 │   ├── review.md
 │   ├── solution.md
-│   └── spec-compliance-review.md
+│   └── task-review.md
 ├── CLAUDE.md             # Code simplicity principle
 └── README.md
 ```

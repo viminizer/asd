@@ -1,12 +1,12 @@
 ---
 name: asd:execute
-description: "Execute implementation plans with asd-forge agents, smart model selection, and per-task reviews."
+description: "Execute implementation plans with asd-forge agents and per-task reviews."
 argument-hint: "[plan file path]"
 ---
 
 # /asd:execute
 
-Execute implementation plans by dispatching `asd-forge` agents per task with TDD, reviews, and smart model selection.
+Execute implementation plans by dispatching `asd-forge` agents per task with TDD and per-task reviews.
 
 ## Plan file
 
