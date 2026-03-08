@@ -18,7 +18,7 @@ Fix a bug by finding the root cause first, then applying a targeted fix with tes
 
 1. **Investigate** - Reproduce, trace root cause, gather evidence
 2. **Fix** - Write failing test, implement fix, verify
-3. **Review** - Dispatch `asd-code-reviewer` on the diff
+3. **Review** - Launch `asd-code-reviewer` via Agent tool on the diff
 4. **Commit** - If review passes
 
 ## Execution

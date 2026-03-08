@@ -1,6 +1,6 @@
 ---
 name: asd:review
-description: "Review code changes (diffs, PRs, branches) by dispatching asd-code-reviewer in diff mode."
+description: "Review code changes (diffs, PRs, branches) by launching asd-code-reviewer via Agent tool in diff mode."
 argument-hint: "[PR number, branch name, or leave empty for current changes]"
 ---
 
@@ -22,7 +22,7 @@ Review code changes with systematic analysis.
 ## What it does
 
 1. **Determine target** - Identify what to review based on input
-2. **Review** - Dispatch appropriate reviewer in diff mode
+2. **Review** - Launch appropriate reviewer via Agent tool in diff mode
 3. **Save findings** - Write review file to `docs/reviews/` (skipped if clean)
 4. **Next steps** - Fix issues, merge, or request human review
 

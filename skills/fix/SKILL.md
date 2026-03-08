@@ -1,6 +1,6 @@
 ---
 name: fix
-description: "Use when fixing bugs. Enforces root cause investigation before any fix attempt. Follows investigate, fix (TDD), review cycle. Dispatches asd-investigator for complex bugs."
+description: "Use when fixing bugs. Enforces root cause investigation before any fix attempt. Follows investigate, fix (TDD), review cycle. Launches asd-investigator via Agent tool for complex bugs."
 ---
 
 # Fix
@@ -18,12 +18,12 @@ No fixes without root cause investigation first.
 
 ## Language detection
 
-Before dispatching agents, detect the project language from file extensions, build files, and the bug context:
+Before launching subagents, detect the project language from file extensions, build files, and the bug context:
 - **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-*` agents
 - **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-*` agents
 - **Other or mixed:** use generic `asd-*` agents
 
-Agents run in clean contexts and cannot see skills. When dispatching specialized agents, include only the specific skill conventions relevant to the bug (e.g. transaction patterns for a JPA issue, React lifecycle rules for a stale closure bug). Do not pass the entire skill - just the parts that help the agent do its job.
+Agents run in clean contexts and cannot see skills. When launching specialized subagents via the Agent tool, include only the specific skill conventions relevant to the bug (e.g. transaction patterns for a JPA issue, React lifecycle rules for a stale closure bug). Do not pass the entire skill - just the parts that help the agent do its job.
 
 ## Phase 1: Investigate
 
@@ -33,7 +33,7 @@ If the error message, stack trace, or context makes the root cause immediately c
 
 ### Complex bugs (root cause is unclear)
 
-Dispatch the appropriate investigator (`asd-java-investigator`, `asd-ts-investigator`, or `asd-investigator`) with:
+Use the Agent tool to launch the appropriate investigator subagent (`subagent_type: "asd:asd-java-investigator"`, `"asd:asd-ts-investigator"`, or `"asd:asd-investigator"`) with:
 - The bug description and error messages
 - Affected file paths or areas (if known)
 - Any initial observations you have
@@ -41,7 +41,7 @@ Dispatch the appropriate investigator (`asd-java-investigator`, `asd-ts-investig
 The investigator runs in a clean context, traces the root cause backward through the call stack, and returns a diagnosis with location, evidence, and suggested fix.
 
 **If the investigator returns "Inconclusive"**, either:
-- Provide more context and re-dispatch
+- Provide more context and re-launch via the Agent tool
 - Investigate manually using the narrowed-down area it identified
 - Stop and report to the user
 
@@ -65,12 +65,12 @@ Apply a single, targeted fix:
 ### 2c. Verify
 
 - Run the new test - should pass
-- Dispatch the `asd-test-runner` agent (haiku) to run the full test suite - no regressions
+- Use the Agent tool to launch an `asd-test-runner` subagent (`subagent_type: "asd:asd-test-runner"`) to run the full test suite - no regressions
 - If no test suite exists, manually verify the fix
 
 ## Phase 3: Review
 
-Dispatch the appropriate reviewer (`asd-java-reviewer`, `asd-ts-reviewer`, or `asd-code-reviewer`) on the fix:
+Use the Agent tool to launch the appropriate reviewer subagent (`subagent_type: "asd:asd-java-reviewer"`, `"asd:asd-ts-reviewer"`, or `"asd:asd-code-reviewer"`) on the fix:
 
 ```
 Review scope: bug fix

@@ -24,8 +24,8 @@ Do NOT invoke any implementation skill, write any code, scaffold any project, or
 
 ### Phase 1: Explore Project Context
 
-Dispatch the `asd-repo-researcher` agent to scan the codebase:
-- Task asd-repo-researcher("Understand existing patterns related to: <feature_description>")
+Use the Agent tool to launch an `asd-repo-researcher` subagent (`subagent_type: "asd:asd-repo-researcher"`) to scan the codebase:
+- prompt: "Understand existing patterns related to: <feature_description>"
 
 Also check `docs/plans/` for prior plans on similar topics to avoid re-exploring settled decisions.
 
@@ -40,7 +40,7 @@ Use the **AskUserQuestion tool** to ask questions **one at a time**. See the `br
 
 ### Phase 3: Explore Approaches
 
-Dispatch the `asd-approach-proposer` agent with:
+Use the Agent tool to launch an `asd-approach-proposer` subagent (`subagent_type: "asd:asd-approach-proposer"`) with:
 - Feature description
 - User requirements and decisions from Phase 2
 - Codebase research findings from Phase 1

@@ -43,7 +43,7 @@ subagent_type: "asd:asd-docs-researcher"
 prompt: "Research external docs and best practices for: <feature_description>"
 ```
 
-**If brainstorm context exists**, skip asd-repo-researcher (codebase was already scanned during brainstorm Phase 1). Dispatch only learnings + docs researchers.
+**If brainstorm context exists**, skip asd-repo-researcher (codebase was already scanned during brainstorm Phase 1). Launch only learnings + docs researchers via the Agent tool.
 
 All three agents go in a single message. Wait for all to complete.
 
@@ -57,7 +57,7 @@ If user agrees, invoke `/asd:campaign_create` and pass the research context.
 
 ## Phase 3: Plan generation
 
-Dispatch `asd-plan-writer` via the Agent tool with everything pre-resolved:
+Use the Agent tool to launch an `asd-plan-writer` subagent with everything pre-resolved:
 
 ```
 subagent_type: "asd:asd-plan-writer"
@@ -83,14 +83,14 @@ Filename rules: date prefix, type (feat/fix/refactor), kebab-case 3-5 words, end
 
 ## Phase 4: Validate and finish
 
-Dispatch `asd-plan-validator` via the Agent tool on the written plan file:
+Use the Agent tool to launch an `asd-plan-validator` subagent on the written plan file:
 
 ```
 subagent_type: "asd:asd-plan-validator"
 prompt: "Validate this plan: <plan_file_path>"
 ```
 
-If validator returns critical issues, re-dispatch `asd-plan-writer` with validator feedback and the current plan path. Max 2 iterations.
+If validator returns critical issues, use the Agent tool to launch a new `asd-plan-writer` subagent with validator feedback and the current plan path. Max 2 iterations.
 
 Present options via AskUserQuestion:
 1. **Review** (recommended) - `/asd:technical_review docs/plans/<filename>`

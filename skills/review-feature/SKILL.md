@@ -1,6 +1,6 @@
 ---
 name: review-feature
-description: "Use when reviewing an existing feature's implementation end-to-end. Searches codebase, dispatches asd-code-reviewer in audit mode, and writes a review document."
+description: "Use when reviewing an existing feature's implementation end-to-end. Searches codebase, launches asd-code-reviewer via Agent tool in audit mode, and writes a review document."
 ---
 
 # Review feature
@@ -15,14 +15,14 @@ Review an existing feature's full implementation across backend and frontend.
 
 ## Language detection
 
-Before dispatching agents, detect the project language from file extensions and build files:
+Before launching subagents, detect the project language from file extensions and build files:
 - **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-reviewer`
 - **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-reviewer`
 - **Other or mixed:** use `asd-code-reviewer`
 
 ## Phase 1: Identify scope
 
-Dispatch the `asd-file-scoper` agent (haiku) to find all related files:
+Use the Agent tool to launch an `asd-file-scoper` subagent (`subagent_type: "asd:asd-file-scoper"`) to find all related files:
 
 ```
 Feature: [feature description from user]
@@ -34,7 +34,7 @@ Present the returned file list to the user and ask: "These are the files I found
 
 ## Phase 2: Review
 
-Dispatch the appropriate reviewer (`asd-java-reviewer`, `asd-ts-reviewer`, or `asd-code-reviewer`) in audit mode:
+Use the Agent tool to launch the appropriate reviewer subagent (`subagent_type: "asd:asd-java-reviewer"`, `"asd:asd-ts-reviewer"`, or `"asd:asd-code-reviewer"`) in audit mode:
 
 ```
 Review scope: feature audit

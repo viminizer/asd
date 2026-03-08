@@ -1,11 +1,11 @@
 ---
 name: review
-description: "Use when reviewing code changes (diffs, PRs, branches). Dispatches asd-code-reviewer in diff mode with severity-based reporting."
+description: "Use when reviewing code changes (diffs, PRs, branches). Launches asd-code-reviewer via Agent tool in diff mode with severity-based reporting."
 ---
 
 # Code review
 
-Review code changes by dispatching the `asd-code-reviewer` agent in diff mode.
+Review code changes by launching an `asd-code-reviewer` subagent via the Agent tool in diff mode.
 
 ## When to use
 
@@ -15,7 +15,7 @@ Review code changes by dispatching the `asd-code-reviewer` agent in diff mode.
 
 ## Language detection
 
-Before dispatching agents, detect the project language from file extensions, build files, and the diff context:
+Before launching subagents, detect the project language from file extensions, build files, and the diff context:
 - **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-reviewer`
 - **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-reviewer`
 - **Other or mixed:** use `asd-code-reviewer`
@@ -33,7 +33,7 @@ If the base branch is ambiguous, ask the user.
 
 ## Phase 2: Pre-filter
 
-Dispatch the `asd-diff-analyzer` agent (haiku) to classify changes:
+Use the Agent tool to launch an `asd-diff-analyzer` subagent (`subagent_type: "asd:asd-diff-analyzer"`) to classify changes:
 
 ```
 [Diff content or branch range]
@@ -43,7 +43,7 @@ Summarize changes and recommend which review passes to run.
 
 ## Phase 3: Review
 
-Dispatch the appropriate reviewer (`asd-java-reviewer`, `asd-ts-reviewer`, or `asd-code-reviewer`) in diff mode, passing the diff-analyzer's recommendations:
+Use the Agent tool to launch the appropriate reviewer subagent (`subagent_type: "asd:asd-java-reviewer"`, `"asd:asd-ts-reviewer"`, or `"asd:asd-code-reviewer"`) in diff mode, passing the diff-analyzer's recommendations:
 
 ```
 Review scope: diff review

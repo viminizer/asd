@@ -1,11 +1,13 @@
 ---
 name: execution-checkpoints
-description: "Use when executing implementation plans. Dispatches asd-forge agents per task with per-task reviews. Trigger this skill whenever the user says to execute a plan, implement tasks from a plan, run through a plan file, work through plan tasks sequentially, or dispatch forge agents. Also trigger when the user references a plan file path and asks to implement it, or says the technical review passed and they want to proceed with implementation."
+description: "Use when executing implementation plans. Launches asd-forge subagents via the Agent tool per task with per-task reviews. Trigger this skill whenever the user says to execute a plan, implement tasks from a plan, run through a plan file, work through plan tasks sequentially, or dispatch forge agents. Also trigger when the user references a plan file path and asks to implement it, or says the technical review passed and they want to proceed with implementation."
 ---
 
 # Execution checkpoints
 
-Execute validated plans using subagent-driven development. Each task is dispatched to an `asd-forge` agent, reviewed, then the next task begins.
+Execute validated plans using subagent-driven development. Each task runs in an independent `asd-forge` subagent via the Agent tool, reviewed, then the next task begins.
+
+**Critical: Every task and review MUST be dispatched via the Agent tool as an independent subagent. Never implement tasks inline in the main context.**
 
 ## When to use
 
@@ -36,28 +38,32 @@ Process tasks sequentially in plan order. For each task:
 
 Read the current version of files the task will modify. Pass contents directly to the subagent so it doesn't need to explore. If the task only creates new files, pass an empty `pre_read_files`.
 
-### 3b. Dispatch asd-forge
+### 3b. Run asd-forge via Agent tool
 
-Dispatch the task to an `asd-forge` agent:
+Use the Agent tool to launch an `asd-forge` subagent for this task. Do NOT implement the task inline.
 
 ```
-Task asd-forge({
-  context: [what prior tasks accomplished, relevant files created/modified],
-  pre_read_files: [contents of files this task will modify],
-  task: [full task text extracted in Phase 1]
-})
+Agent tool call:
+  subagent_type: "asd:asd-forge"
+  prompt: |
+    Context: [what prior tasks accomplished, relevant files created/modified]
+    Pre-read files: [contents of files this task will modify]
+    Task: [full task text extracted in Phase 1]
 ```
 
-**If asd-forge returns QUESTIONS:** Answer using context from the plan and codebase, then re-dispatch with the answers included. Max 2 question rounds, then escalate to the user.
+**If asd-forge returns QUESTIONS:** Answer using context from the plan and codebase, then re-launch a new Agent tool call with the answers included. Max 2 question rounds, then escalate to the user.
 
 **If asd-forge returns BLOCKED:** Mark the task as blocked in TodoWrite, then stop and ask the user.
 
 ### 3c. Review
 
-After asd-forge returns DONE, dispatch an `asd-code-reviewer` agent with both spec compliance and code quality in a single pass:
+After asd-forge returns DONE, use the Agent tool to launch an `asd-code-reviewer` subagent with both spec compliance and code quality in a single pass:
 
 ```
-Review scope: task-review
+Agent tool call:
+  subagent_type: "asd:asd-code-reviewer"
+  prompt: |
+    Review scope: task-review
 
 ## Specification
 [Full task text from Phase 1]
@@ -73,7 +79,7 @@ Check both spec compliance and code quality in one pass:
 Report PASS or list issues with file:line references.
 ```
 
-**If issues found:** Resume the `asd-forge` agent to fix. Re-review. Max 2 iterations, then stop and ask the user.
+**If issues found:** Use the Agent tool with the `resume` parameter to resume the same `asd-forge` agent to fix. Re-review via a new Agent tool call. Max 2 iterations, then stop and ask the user.
 
 ### 3d. Move to next task
 
@@ -83,7 +89,7 @@ Only proceed when review passes. Mark the task as completed.
 
 After all tasks complete:
 
-1. Dispatch the `asd-test-runner` agent to run the full test suite
+1. Use the Agent tool to launch an `asd-test-runner` subagent (`subagent_type: "asd:asd-test-runner"`) to run the full test suite
 2. If no test suite exists, verify manually by running the changed code paths
 3. Verify acceptance criteria from the plan
 
@@ -91,16 +97,19 @@ After all tasks complete:
 
 Skip for plans with fewer than 3 tasks - per-task reviews are sufficient.
 
-Dispatch `asd-code-reviewer` on the entire branch:
+Use the Agent tool to launch an `asd-code-reviewer` subagent on the entire branch:
 
 ```
-Review scope: branch-level
-Diff: git diff <base-branch>..HEAD
-Focus on cross-task integration issues only. Per-task reviews already passed.
-Report PASS or list issues.
+Agent tool call:
+  subagent_type: "asd:asd-code-reviewer"
+  prompt: |
+    Review scope: branch-level
+    Diff: git diff <base-branch>..HEAD
+    Focus on cross-task integration issues only. Per-task reviews already passed.
+    Report PASS or list issues.
 ```
 
-**If issues found:** Fix them, re-run tests, re-review. Max 2 iterations.
+**If issues found:** Fix them, re-run tests, re-review via new Agent tool calls. Max 2 iterations.
 
 ## Phase 6: Finish
 

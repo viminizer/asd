@@ -6,7 +6,7 @@ argument-hint: "[plan file path]"
 
 # /asd:execute
 
-Execute implementation plans by dispatching `asd-forge` agents per task with TDD and per-task reviews.
+Execute implementation plans by launching `asd-forge` subagents via the Agent tool per task with TDD and per-task reviews.
 
 ## Plan file
 

@@ -48,10 +48,10 @@ asd fixes this by giving your agent a complete workflow - from brainstorming thr
 | `brainstorming` | Explore user intent, propose approaches, transition to planning |
 | `planning` | Transform ideas into validated plans with TDD tasks |
 | `technical-review` | Check plan quality, technical soundness, implementation feasibility |
-| `execution-checkpoints` | Dispatch asd-forge per task with two-stage review |
+| `execution-checkpoints` | Launch asd-forge subagents via Agent tool per task with review |
 | `finishing-a-development-branch` | Present merge/PR/keep/discard options after execution |
 | `test-driven-development` | RED-GREEN-REFACTOR cycle before writing code |
-| `review` | Dispatch asd-code-reviewer on diffs and PRs |
+| `review` | Launch asd-code-reviewer via Agent tool on diffs and PRs |
 | `review-feature` | Audit existing feature implementations end-to-end |
 | `fix` | Root cause investigation, TDD fix, review cycle |
 | `capture` | Document problems, root causes, and prevention strategies |

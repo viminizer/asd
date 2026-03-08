@@ -23,7 +23,7 @@ When no file path is given:
 
 1. Ask the user to describe the big change (use `$ARGUMENTS` if provided)
 2. Run `mkdir -p docs/campaigns/`
-3. If research context was passed from a brainstorming or planning escalation, use it. Otherwise dispatch `asd-campaign-researcher` to explore the codebase in depth (it runs parallel searches for structure, usage patterns, and dependencies, returning a structured module breakdown).
+3. If research context was passed from a brainstorming or planning escalation, use it. Otherwise use the Agent tool to launch an `asd-campaign-researcher` subagent (`subagent_type: "asd:asd-campaign-researcher"`) to explore the codebase in depth (it runs parallel searches for structure, usage patterns, and dependencies, returning a structured module breakdown).
 4. If research finds no matching files or patterns, tell the user the change doesn't apply to this codebase. Do not fabricate items for files that don't exist. Stop here.
 5. Analyze scope and suggest an incremental approach (e.g. "migrate by module" or "migrate by feature area"). Aim for 3-8 items - group related files into logical units rather than listing one item per file.
 6. Present the approach and ask the user to confirm before generating
@@ -40,7 +40,7 @@ When no file path is given:
 
 1. Discover or load the campaign file
 2. Show current items and ask: "Add, remove, or reorder?"
-3. **Add:** ask for description, dispatch `asd-repo-researcher` to find scope, assign effort and dependencies
+3. **Add:** ask for description, use the Agent tool to launch an `asd-repo-researcher` subagent (`subagent_type: "asd:asd-repo-researcher"`) to find scope, assign effort and dependencies
 4. **Remove:** ask which item, remove it, renumber remaining items, update all dependency references
 5. **Reorder:** ask for new order, renumber, recalculate dependencies - warn if reorder breaks a dependency
 6. Update the file, update the `updated` date in frontmatter, commit

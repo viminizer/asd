@@ -17,7 +17,7 @@ Review implementation plans to catch issues before execution starts.
 
 ## Language detection
 
-Before dispatching agents, detect the project language from file extensions and build files:
+Before launching subagents, detect the project language from file extensions and build files:
 - **Java:** `.java` files, `pom.xml` or `build.gradle` present → use `asd-java-reviewer`
 - **TypeScript/JavaScript:** `.ts`, `.tsx`, `.js`, `.jsx` files, `package.json` present → use `asd-ts-reviewer`
 - **Other or mixed:** use `asd-code-reviewer`
@@ -41,7 +41,7 @@ Planning already validates structure. Focus only on what planning can't catch:
 
 ### Phase 3: Technical soundness
 
-Dispatch the appropriate reviewer (`asd-java-reviewer`, `asd-ts-reviewer`, or `asd-code-reviewer`) for technical approach:
+Use the Agent tool to launch the appropriate reviewer subagent (`subagent_type: "asd:asd-java-reviewer"`, `"asd:asd-ts-reviewer"`, or `"asd:asd-code-reviewer"`) for technical approach:
 
 ```
 Review scope: plan-level audit
