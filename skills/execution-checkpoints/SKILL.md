@@ -26,15 +26,18 @@ digraph process {
     "2. Create feature branch" [shape=box];
 
     subgraph cluster_per_task {
-        label="Per Task (sequential)";
+        label="Per Task";
         "Pre-read files task will modify" [shape=box];
-        "Dispatch asd-forge subagent (./forge-prompt.md)" [shape=box];
-        "Forge asks questions?" [shape=diamond];
-        "Answer questions, re-dispatch forge" [shape=box];
-        "Forge implements, tests, self-reviews, commits" [shape=box];
-        "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)" [shape=box];
-        "Reviewer approves?" [shape=diamond];
-        "Resume forge to fix issues" [shape=box];
+        "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
+        "Implementer asks questions?" [shape=diamond];
+        "Answer questions, re-dispatch" [shape=box];
+        "Implementer implements, tests, self-reviews, commits" [shape=box];
+        "Dispatch spec reviewer (./spec-reviewer-prompt.md)" [shape=box];
+        "Spec reviewer approves?" [shape=diamond];
+        "Implementer fixes spec gaps" [shape=box];
+        "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" [shape=box];
+        "Code quality reviewer approves?" [shape=diamond];
+        "Implementer fixes quality issues" [shape=box];
         "Mark task complete in TodoWrite" [shape=box];
     }
 
@@ -45,16 +48,20 @@ digraph process {
 
     "1. Read plan, extract all tasks, create TodoWrite" -> "2. Create feature branch";
     "2. Create feature branch" -> "Pre-read files task will modify";
-    "Pre-read files task will modify" -> "Dispatch asd-forge subagent (./forge-prompt.md)";
-    "Dispatch asd-forge subagent (./forge-prompt.md)" -> "Forge asks questions?";
-    "Forge asks questions?" -> "Answer questions, re-dispatch forge" [label="yes"];
-    "Answer questions, re-dispatch forge" -> "Dispatch asd-forge subagent (./forge-prompt.md)";
-    "Forge asks questions?" -> "Forge implements, tests, self-reviews, commits" [label="no"];
-    "Forge implements, tests, self-reviews, commits" -> "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)";
-    "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)" -> "Reviewer approves?";
-    "Reviewer approves?" -> "Resume forge to fix issues" [label="no"];
-    "Resume forge to fix issues" -> "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)" [label="re-review"];
-    "Reviewer approves?" -> "Mark task complete in TodoWrite" [label="yes"];
+    "Pre-read files task will modify" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer asks questions?";
+    "Implementer asks questions?" -> "Answer questions, re-dispatch" [label="yes"];
+    "Answer questions, re-dispatch" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Implementer asks questions?" -> "Implementer implements, tests, self-reviews, commits" [label="no"];
+    "Implementer implements, tests, self-reviews, commits" -> "Dispatch spec reviewer (./spec-reviewer-prompt.md)";
+    "Dispatch spec reviewer (./spec-reviewer-prompt.md)" -> "Spec reviewer approves?";
+    "Spec reviewer approves?" -> "Implementer fixes spec gaps" [label="no"];
+    "Implementer fixes spec gaps" -> "Dispatch spec reviewer (./spec-reviewer-prompt.md)" [label="re-review"];
+    "Spec reviewer approves?" -> "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" [label="yes"];
+    "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer approves?";
+    "Code quality reviewer approves?" -> "Implementer fixes quality issues" [label="no"];
+    "Implementer fixes quality issues" -> "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" [label="re-review"];
+    "Code quality reviewer approves?" -> "Mark task complete in TodoWrite" [label="yes"];
     "Mark task complete in TodoWrite" -> "More tasks?";
     "More tasks?" -> "Pre-read files task will modify" [label="yes"];
     "More tasks?" -> "Run full test suite (asd-test-runner subagent)" [label="no"];
@@ -67,8 +74,9 @@ digraph process {
 
 Use these templates when constructing Agent tool calls:
 
-- `./forge-prompt.md` - Template for dispatching asd-forge subagent
-- `./reviewer-prompt.md` - Template for dispatching asd-code-reviewer subagent
+- `./implementer-prompt.md` - Dispatch implementer subagent (general-purpose)
+- `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer (general-purpose)
+- `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer (asd-code-reviewer)
 
 ## Phase 1: Load and prepare
 
@@ -164,19 +172,25 @@ If all tasks are sequential (each depends on the previous), there's only one tas
 For each task in the wave:
 1. Create a worktree: `git worktree add ../task-N-<name> -b task-N/<name>`
 2. Pre-read files the task will modify
-3. Launch Agent tool with `subagent_type: "asd:asd-forge"` and `isolation: "worktree"`, using `./forge-prompt.md` template
+3. Launch Agent tool (general-purpose) using `./implementer-prompt.md` template, with `isolation: "worktree"`
 
 **Launch all tasks in the wave in a single message with multiple Agent tool calls** so they run in parallel.
 
-**If forge returns QUESTIONS:** Answer and re-dispatch. Max 2 question rounds, then escalate to the user.
+**If implementer returns QUESTIONS:** Answer and re-dispatch. Max 2 question rounds, then escalate to the user.
 
-**If forge returns BLOCKED:** Mark the task as blocked in TodoWrite, continue with other tasks in the wave.
+**If implementer returns BLOCKED:** Mark the task as blocked in TodoWrite, continue with other tasks in the wave.
 
-### 3d. Review each task in the wave
+### 3d. Two-stage review for each task in the wave
 
-After each forge returns DONE, launch review via `./reviewer-prompt.md` template with `subagent_type: "asd:asd-code-reviewer"`. Reviews for completed tasks in the same wave can also run in parallel.
+After each implementer returns DONE, run two review stages. Reviews for completed tasks in the same wave can run in parallel.
 
-**If issues found:** Resume the forge agent to fix. Re-review. Max 2 iterations.
+**Stage 1 - Spec compliance:** Launch via `./spec-reviewer-prompt.md` template (general-purpose agent). Checks whether the implementation matches the spec - nothing more, nothing less.
+
+**If spec issues found:** Resume the implementer to fix spec gaps. Re-review spec compliance. Max 2 iterations.
+
+**Stage 2 - Code quality:** Only after spec compliance passes. Launch via `./code-quality-reviewer-prompt.md` template with `subagent_type: "asd:asd-code-reviewer"`.
+
+**If quality issues found:** Resume the implementer to fix. Re-review quality. Max 2 iterations.
 
 ### 3e. Merge wave results
 
@@ -238,6 +252,67 @@ After the user chooses (not on discard): if a campaign link exists in the plan (
 - **Processing results:** Extract only DONE/BLOCKED/PASS/issues. Discard narrative and reasoning.
 - **Between tasks:** Do not accumulate context. Each task starts fresh with its own spec and pre-read files.
 
+## Example workflow
+
+```
+[Read plan file once: docs/plans/feature-plan.md]
+[Extract all 5 tasks with full text, dependencies, and context]
+[Create TodoWrite with all tasks]
+
+Wave 1 (parallel): Task 1, Task 2, Task 4
+Wave 2: Task 3 (depends on #1, #2)
+Wave 3: Task 5 (depends on #3)
+
+--- Wave 1 ---
+
+[Pre-read files for Task 1, 2, 4]
+[Dispatch 3 implementer subagents in parallel, each in own worktree]
+
+Task 1 implementer: "Before I begin - should this be user or system level?"
+You: "User level"
+Task 1 implementer: Implemented, 5/5 tests passing, committed
+Task 2 implementer: Implemented, 3/3 tests passing, committed
+Task 4 implementer: Implemented, committed
+
+[Dispatch 3 spec reviewers in parallel]
+Spec reviewer (Task 1): ✅ Spec compliant
+Spec reviewer (Task 2): ❌ Missing: progress reporting
+Spec reviewer (Task 4): ✅ Spec compliant
+
+[Task 2 implementer fixes, spec reviewer re-reviews]
+Spec reviewer (Task 2): ✅ Spec compliant now
+
+[Dispatch 3 code quality reviewers in parallel]
+All approved.
+
+[Merge all 3 task branches, clean up worktrees]
+[Mark Tasks 1, 2, 4 complete]
+
+--- Wave 2 ---
+
+[Task 3 runs sequentially, single task in wave]
+...
+
+--- Wave 3 ---
+
+[Task 5 runs sequentially]
+...
+
+[Final test suite]
+[Branch review]
+Done!
+```
+
+## Advantages
+
+**Parallel waves:** Independent tasks run simultaneously, cutting wall-clock time.
+
+**Two-stage review:** Spec compliance catches over/under-building. Code quality catches bugs and maintainability issues. Separate passes, separate concerns.
+
+**Worktree isolation:** Parallel tasks can't conflict. Uncommitted work is protected.
+
+**Fresh context per task:** No context pollution between tasks.
+
 ## Red flags - never do these
 
 - Write code, edit files, or run tests yourself (use Agent tool)
@@ -250,9 +325,25 @@ After the user chooses (not on discard): if a campaign link exists in the plan (
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (reviewer found issues = not done)
-- Skip review loops (reviewer found issues = forge fixes = review again)
+- **Start code quality review before spec compliance passes** (wrong order)
+- Skip review loops (reviewer found issues = implementer fixes = review again)
 - Move to next wave while current wave has unresolved issues
-- Let forge self-review replace actual review (both are needed)
+- Let implementer self-review replace actual review (both are needed)
+
+**If implementer asks questions:**
+- Answer clearly and completely
+- Provide additional context if needed
+- Don't rush them into implementation
+
+**If reviewer finds issues:**
+- Implementer (same subagent) fixes them
+- Reviewer reviews again
+- Repeat until approved
+- Don't skip the re-review
+
+**If subagent fails task:**
+- Dispatch fix subagent with specific instructions
+- Don't try to fix manually (context pollution)
 
 ## When to stop and ask
 
@@ -260,3 +351,12 @@ After the user chooses (not on discard): if a campaign link exists in the plan (
 - Plan has critical gaps
 - Fix loop exceeds 2 iterations
 - Verification fails after fixes
+
+## Integration
+
+**Required workflow skills:**
+- **asd:planning** - Creates the plan this skill executes
+- **asd:finishing-a-development-branch** - Complete development after all tasks
+
+**Subagents should use:**
+- **asd:test-driven-development** - Subagents follow TDD for each task

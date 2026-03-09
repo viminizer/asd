@@ -1,6 +1,6 @@
 {
   "name": "asd",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Accelerated Software Development - Workflow with brainstorming, planning, technical review, subagent-driven execution, code review, feature review, knowledge capture, bug fix, TDD, QA dogfood, and cleanup. 17 commands, 16 skills, 17 agents, 7 templates.",
   "author": {
     "name": "Viminizer"
