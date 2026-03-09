@@ -74,9 +74,45 @@ Use these templates when constructing Agent tool calls:
 
 1. Read the plan file once. Extract every task's full text (including file paths, code, commands, acceptance criteria). Store in memory - do not re-read the plan during execution.
 2. Note inter-task context: what each task produces that later tasks need.
-3. Create a TodoWrite task for each plan task.
+3. **Immediately create a TodoWrite checklist with ALL tasks before doing anything else.** This is mandatory - do not proceed to branch setup or execution without it.
+
+Call TodoWrite with every task from the plan:
+
+```
+TodoWrite:
+  tasks:
+    - id: "task-1"
+      description: "Task 1: [task name from plan]"
+      status: "pending"
+    - id: "task-2"
+      description: "Task 2: [task name from plan]"
+      status: "pending"
+    ... (one entry per plan task)
+    - id: "verify"
+      description: "Verify: no regressions across full test suite"
+      status: "pending"
+```
+
+The user must see the full task list with checkboxes before execution begins. Update each task to `in_progress` when starting it and `completed` when its review passes.
 
 ## Phase 2: Branch setup
+
+First, check for uncommitted changes:
+
+```bash
+git status --porcelain
+```
+
+**If there are uncommitted changes:** Create a git worktree to isolate execution from the current work.
+
+```bash
+git worktree add ../feat-<plan-name> -b feat/<plan-name>
+cd ../feat-<plan-name>
+```
+
+Tell the user: "You have uncommitted changes, so I'm working in a separate worktree at `../feat-<plan-name>`. Your current work is untouched."
+
+**If working tree is clean:** Create a branch normally.
 
 ```bash
 git checkout -b feat/<plan-name>
