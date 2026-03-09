@@ -29,6 +29,7 @@ date: YYYY-MM-DD
 ## Implementation
 
 ### Task 1: [Name]
+**Depends on:** - (none, or comma-separated task numbers e.g. 1, 2)
 
 **Files:**
 - Create: `exact/path/to/file.ext`

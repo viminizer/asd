@@ -76,16 +76,19 @@ Use these templates when constructing Agent tool calls:
 2. Note inter-task context: what each task produces that later tasks need.
 3. **Immediately create a TodoWrite checklist with ALL tasks before doing anything else.** This is mandatory - do not proceed to branch setup or execution without it.
 
-Call TodoWrite with every task from the plan:
+Call TodoWrite with every task from the plan. Include dependency info so the user sees which tasks can run in parallel:
 
 ```
 TodoWrite:
   tasks:
     - id: "task-1"
-      description: "Task 1: [task name from plan]"
+      description: "Task 1: [task name]"
       status: "pending"
     - id: "task-2"
-      description: "Task 2: [task name from plan]"
+      description: "Task 2: [task name]"
+      status: "pending"
+    - id: "task-3"
+      description: "Task 3: [task name] (depends on #1, #2)"
       status: "pending"
     ... (one entry per plan task)
     - id: "verify"
@@ -120,31 +123,83 @@ git checkout -b feat/<plan-name>
 
 Never start implementation on main/master without explicit user consent.
 
-## Phase 3: Execute tasks
+## Phase 3: Build dependency graph and execution waves
 
-Process tasks sequentially in plan order. For each task:
+Each task in the plan has a `Depends on:` field. Use it to build waves of tasks that can run in parallel.
 
-### 3a. Pre-read files
+### 3a. Analyze dependencies
 
-Read the current version of files the task will modify. Pass contents directly to the subagent so it doesn't need to explore. If the task only creates new files, say so in the prompt.
+Parse each task's `Depends on:` field:
+- `-` or empty = no dependencies (can run immediately)
+- `1, 3` = must wait for tasks 1 and 3 to complete
 
-### 3b. Launch asd-forge subagent
+If the plan has no `Depends on:` fields, infer dependencies from file paths: if task B modifies or reads a file that task A creates, B depends on A. When in doubt, make it sequential.
 
-Fill in the template from `./forge-prompt.md` and call the Agent tool with `subagent_type: "asd:asd-forge"`.
+### 3b. Group into waves
 
-**If forge returns QUESTIONS:** Answer using context from the plan and codebase, then launch a new Agent tool call with the answers included. Max 2 question rounds, then escalate to the user.
+Group tasks into waves where all tasks in a wave have their dependencies satisfied:
 
-**If forge returns BLOCKED:** Mark the task as blocked in TodoWrite, stop, and ask the user.
+```
+Wave 1: [tasks with no dependencies]
+Wave 2: [tasks that depend only on Wave 1 tasks]
+Wave 3: [tasks that depend on Wave 1 or 2 tasks]
+...
+```
 
-### 3c. Review
+Display the execution plan to the user:
+```
+Wave 1 (parallel): Task 1, Task 2, Task 4
+Wave 2 (parallel): Task 3 (depends on #1, #2)
+Wave 3 (sequential): Task 5 (depends on #3)
+```
 
-After forge returns DONE, fill in the template from `./reviewer-prompt.md` and call the Agent tool with `subagent_type: "asd:asd-code-reviewer"`.
+If all tasks are sequential (each depends on the previous), there's only one task per wave - that's fine.
 
-**If issues found:** Call the Agent tool with the `resume` parameter to resume the same forge agent to fix. Re-review via a new Agent tool call. Max 2 iterations, then stop and ask the user.
+### 3c. Execute each wave
 
-### 3d. Move to next task
+**For waves with a single task:** Run it directly in the current branch. No worktree needed.
 
-Only proceed when review passes. Mark the task as completed.
+**For waves with multiple tasks:** Each task runs in its own worktree so they don't conflict.
+
+For each task in the wave:
+1. Create a worktree: `git worktree add ../task-N-<name> -b task-N/<name>`
+2. Pre-read files the task will modify
+3. Launch Agent tool with `subagent_type: "asd:asd-forge"` and `isolation: "worktree"`, using `./forge-prompt.md` template
+
+**Launch all tasks in the wave in a single message with multiple Agent tool calls** so they run in parallel.
+
+**If forge returns QUESTIONS:** Answer and re-dispatch. Max 2 question rounds, then escalate to the user.
+
+**If forge returns BLOCKED:** Mark the task as blocked in TodoWrite, continue with other tasks in the wave.
+
+### 3d. Review each task in the wave
+
+After each forge returns DONE, launch review via `./reviewer-prompt.md` template with `subagent_type: "asd:asd-code-reviewer"`. Reviews for completed tasks in the same wave can also run in parallel.
+
+**If issues found:** Resume the forge agent to fix. Re-review. Max 2 iterations.
+
+### 3e. Merge wave results
+
+After all tasks in a wave are reviewed and approved:
+
+**For single-task waves:** Already on the branch, nothing to merge.
+
+**For multi-task waves:** Merge each task branch into the feature branch:
+
+```bash
+git merge task-N/<name> --no-edit
+```
+
+If merge conflicts occur, stop and ask the user - parallel tasks touched overlapping files unexpectedly.
+
+After merging, clean up worktrees:
+
+```bash
+git worktree remove ../task-N-<name>
+git branch -d task-N/<name>
+```
+
+Mark all wave tasks as `completed` in TodoWrite, then proceed to the next wave.
 
 ## Phase 4: Final verification
 
@@ -188,15 +243,16 @@ After the user chooses (not on discard): if a campaign link exists in the plan (
 - Write code, edit files, or run tests yourself (use Agent tool)
 - Start implementation on main/master without user consent
 - Skip reviews or proceed with unfixed issues
-- Dispatch multiple forge subagents in parallel (conflicts)
+- Run tasks in parallel when they have dependencies on each other
+- Run parallel tasks without separate worktrees (they will conflict)
+- Force-merge when worktree merges conflict (stop and ask the user)
 - Make subagent read plan file (provide full text instead)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (reviewer found issues = not done)
 - Skip review loops (reviewer found issues = forge fixes = review again)
-- Move to next task while review has open issues
+- Move to next wave while current wave has unresolved issues
 - Let forge self-review replace actual review (both are needed)
-- Start code quality review before spec compliance passes
 
 ## When to stop and ask
 
