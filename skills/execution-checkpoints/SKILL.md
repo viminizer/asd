@@ -32,18 +32,14 @@ digraph process {
         "Implementer asks questions?" [shape=diamond];
         "Answer questions, re-dispatch" [shape=box];
         "Implementer implements, tests, self-reviews, commits" [shape=box];
-        "Dispatch spec reviewer (./spec-reviewer-prompt.md)" [shape=box];
-        "Spec reviewer approves?" [shape=diamond];
-        "Implementer fixes spec gaps" [shape=box];
-        "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" [shape=box];
-        "Code quality reviewer approves?" [shape=diamond];
-        "Implementer fixes quality issues" [shape=box];
+        "Dispatch reviewer (./reviewer-prompt.md)" [shape=box];
+        "Reviewer approves?" [shape=diamond];
+        "Implementer fixes issues" [shape=box];
         "Mark task complete in TodoWrite" [shape=box];
     }
 
     "More tasks?" [shape=diamond];
     "Run full test suite (asd-test-runner subagent)" [shape=box];
-    "Branch review (3+ tasks only, asd-code-reviewer subagent)" [shape=box];
     "Present finish options to user" [shape=box];
 
     "1. Read plan, extract all tasks, create TodoWrite" -> "2. Create feature branch";
@@ -53,20 +49,15 @@ digraph process {
     "Implementer asks questions?" -> "Answer questions, re-dispatch" [label="yes"];
     "Answer questions, re-dispatch" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Implementer asks questions?" -> "Implementer implements, tests, self-reviews, commits" [label="no"];
-    "Implementer implements, tests, self-reviews, commits" -> "Dispatch spec reviewer (./spec-reviewer-prompt.md)";
-    "Dispatch spec reviewer (./spec-reviewer-prompt.md)" -> "Spec reviewer approves?";
-    "Spec reviewer approves?" -> "Implementer fixes spec gaps" [label="no"];
-    "Implementer fixes spec gaps" -> "Dispatch spec reviewer (./spec-reviewer-prompt.md)" [label="re-review"];
-    "Spec reviewer approves?" -> "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" [label="yes"];
-    "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer approves?";
-    "Code quality reviewer approves?" -> "Implementer fixes quality issues" [label="no"];
-    "Implementer fixes quality issues" -> "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality reviewer approves?" -> "Mark task complete in TodoWrite" [label="yes"];
+    "Implementer implements, tests, self-reviews, commits" -> "Dispatch reviewer (./reviewer-prompt.md)";
+    "Dispatch reviewer (./reviewer-prompt.md)" -> "Reviewer approves?";
+    "Reviewer approves?" -> "Implementer fixes issues" [label="no"];
+    "Implementer fixes issues" -> "Dispatch reviewer (./reviewer-prompt.md)" [label="re-review"];
+    "Reviewer approves?" -> "Mark task complete in TodoWrite" [label="yes"];
     "Mark task complete in TodoWrite" -> "More tasks?";
     "More tasks?" -> "Pre-read files task will modify" [label="yes"];
     "More tasks?" -> "Run full test suite (asd-test-runner subagent)" [label="no"];
-    "Run full test suite (asd-test-runner subagent)" -> "Branch review (3+ tasks only, asd-code-reviewer subagent)";
-    "Branch review (3+ tasks only, asd-code-reviewer subagent)" -> "Present finish options to user";
+    "Run full test suite (asd-test-runner subagent)" -> "Present finish options to user";
 }
 ```
 
@@ -75,8 +66,7 @@ digraph process {
 Use these templates when constructing Agent tool calls:
 
 - `./implementer-prompt.md` - Dispatch implementer subagent (general-purpose)
-- `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer (general-purpose)
-- `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer (asd-code-reviewer)
+- `./reviewer-prompt.md` - Dispatch combined reviewer (asd-code-reviewer) - checks spec compliance first, then code quality in one pass
 
 ## Phase 1: Load and prepare
 
@@ -180,17 +170,11 @@ For each task in the wave:
 
 **If implementer returns BLOCKED:** Mark the task as blocked in TodoWrite, continue with other tasks in the wave.
 
-### 3d. Two-stage review for each task in the wave
+### 3d. Review each task in the wave
 
-After each implementer returns DONE, run two review stages. Reviews for completed tasks in the same wave can run in parallel.
+After each implementer returns DONE, launch review via `./reviewer-prompt.md` template with `subagent_type: "asd:asd-code-reviewer"`. The reviewer checks spec compliance first, then code quality in one pass. Reviews for completed tasks in the same wave can run in parallel.
 
-**Stage 1 - Spec compliance:** Launch via `./spec-reviewer-prompt.md` template (general-purpose agent). Checks whether the implementation matches the spec - nothing more, nothing less.
-
-**If spec issues found:** Resume the implementer to fix spec gaps. Re-review spec compliance. Max 2 iterations.
-
-**Stage 2 - Code quality:** Only after spec compliance passes. Launch via `./code-quality-reviewer-prompt.md` template with `subagent_type: "asd:asd-code-reviewer"`.
-
-**If quality issues found:** Resume the implementer to fix. Re-review quality. Max 2 iterations.
+**If issues found:** Resume the implementer to fix. Re-review. Max 2 iterations.
 
 ### 3e. Merge wave results
 
@@ -219,22 +203,7 @@ Mark all wave tasks as `completed` in TodoWrite, then proceed to the next wave.
 
 After all tasks complete, use the Agent tool to launch an `asd-test-runner` subagent to run the full test suite. If no test suite exists, verify manually.
 
-## Phase 5: Branch review (3+ tasks only)
-
-Skip for plans with fewer than 3 tasks - per-task reviews are sufficient.
-
-Call the Agent tool with `subagent_type: "asd:asd-code-reviewer"`:
-
-```
-Review scope: branch-level
-Diff: git diff <base-branch>..HEAD
-Focus on cross-task integration issues only. Per-task reviews already passed.
-Report PASS or list issues.
-```
-
-**If issues found:** Fix, re-test, re-review. Max 2 iterations.
-
-## Phase 6: Finish
+## Phase 5: Finish
 
 Present options to the user:
 
@@ -268,22 +237,17 @@ Wave 3: Task 5 (depends on #3)
 [Pre-read files for Task 1, 2, 4]
 [Dispatch 3 implementer subagents in parallel, each in own worktree]
 
-Task 1 implementer: "Before I begin - should this be user or system level?"
-You: "User level"
 Task 1 implementer: Implemented, 5/5 tests passing, committed
 Task 2 implementer: Implemented, 3/3 tests passing, committed
 Task 4 implementer: Implemented, committed
 
-[Dispatch 3 spec reviewers in parallel]
-Spec reviewer (Task 1): ✅ Spec compliant
-Spec reviewer (Task 2): ❌ Missing: progress reporting
-Spec reviewer (Task 4): ✅ Spec compliant
+[Dispatch 3 reviewers in parallel]
+Reviewer (Task 1): PASS
+Reviewer (Task 2): ❌ Missing: progress reporting
+Reviewer (Task 4): PASS
 
-[Task 2 implementer fixes, spec reviewer re-reviews]
-Spec reviewer (Task 2): ✅ Spec compliant now
-
-[Dispatch 3 code quality reviewers in parallel]
-All approved.
+[Task 2 implementer fixes, reviewer re-reviews]
+Reviewer (Task 2): PASS
 
 [Merge all 3 task branches, clean up worktrees]
 [Mark Tasks 1, 2, 4 complete]
@@ -299,7 +263,6 @@ All approved.
 ...
 
 [Final test suite]
-[Branch review]
 Done!
 ```
 
@@ -307,7 +270,7 @@ Done!
 
 **Parallel waves:** Independent tasks run simultaneously, cutting wall-clock time.
 
-**Two-stage review:** Spec compliance catches over/under-building. Code quality catches bugs and maintainability issues. Separate passes, separate concerns.
+**Single-pass review:** Spec compliance + code quality in one reviewer call. Fast without sacrificing coverage.
 
 **Worktree isolation:** Parallel tasks can't conflict. Uncommitted work is protected.
 
@@ -325,7 +288,6 @@ Done!
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (reviewer found issues = not done)
-- **Start code quality review before spec compliance passes** (wrong order)
 - Skip review loops (reviewer found issues = implementer fixes = review again)
 - Move to next wave while current wave has unresolved issues
 - Let implementer self-review replace actual review (both are needed)
