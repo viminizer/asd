@@ -5,9 +5,9 @@ description: "Use when the user invokes /asd:subagent_execute. Executes plans wi
 
 # Subagent-driven development
 
-Execute plan by dispatching a fresh subagent per task, with two-stage review after each: spec compliance first, then code quality.
+Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
-**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, no context pollution
+**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
 <HARD-GATE>
 You MUST use the Agent tool to spawn a subagent for EVERY task implementation and EVERY review.
@@ -16,171 +16,232 @@ Your only job as orchestrator is to: read the plan, pre-read files, launch subag
 If you catch yourself writing code or editing files directly, STOP and use the Agent tool instead.
 </HARD-GATE>
 
-## Process
+## When to use
+
+```dot
+digraph when_to_use {
+    "Have implementation plan?" [shape=diamond];
+    "Tasks mostly independent?" [shape=diamond];
+    "Stay in this session?" [shape=diamond];
+    "subagent-driven-development" [shape=box];
+    "execution-checkpoints" [shape=box];
+    "Manual execution or brainstorm first" [shape=box];
+
+    "Have implementation plan?" -> "Tasks mostly independent?" [label="yes"];
+    "Have implementation plan?" -> "Manual execution or brainstorm first" [label="no"];
+    "Tasks mostly independent?" -> "Stay in this session?" [label="yes"];
+    "Tasks mostly independent?" -> "Manual execution or brainstorm first" [label="no - tightly coupled"];
+    "Stay in this session?" -> "subagent-driven-development" [label="yes"];
+    "Stay in this session?" -> "execution-checkpoints" [label="no - parallel session"];
+}
+```
+
+**vs. execution-checkpoints:**
+- Same session (no context switch)
+- Fresh subagent per task (no context pollution)
+- Two-stage review after each task: spec compliance first, then code quality
+- Faster iteration (no human-in-loop between tasks)
+
+## The process
 
 ```dot
 digraph process {
     rankdir=TB;
 
-    "1. Read plan, extract all tasks, create TodoWrite" [shape=box];
-    "2. Create feature branch" [shape=box];
-
     subgraph cluster_per_task {
-        label="Per Task (sequential)";
-        "Pre-read files task will modify" [shape=box];
-        "Dispatch asd-forge subagent (./implementer-prompt.md)" [shape=box];
-        "Forge asks questions?" [shape=diamond];
-        "Answer questions, re-dispatch forge" [shape=box];
-        "Forge implements, tests, self-reviews, commits" [shape=box];
+        label="Per Task";
+        "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
+        "Implementer subagent asks questions?" [shape=diamond];
+        "Answer questions, provide context" [shape=box];
+        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
         "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [shape=box];
-        "Spec reviewer approves?" [shape=diamond];
-        "Resume forge to fix spec gaps" [shape=box];
+        "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
+        "Implementer subagent fixes spec gaps" [shape=box];
         "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [shape=box];
-        "Code quality reviewer approves?" [shape=diamond];
-        "Resume forge to fix quality issues" [shape=box];
+        "Code quality reviewer subagent approves?" [shape=diamond];
+        "Implementer subagent fixes quality issues" [shape=box];
         "Mark task complete in TodoWrite" [shape=box];
     }
 
-    "More tasks?" [shape=diamond];
-    "Run full test suite (asd-test-runner subagent)" [shape=box];
-    "Branch review (3+ tasks only, asd-code-reviewer subagent)" [shape=box];
-    "Present finish options to user" [shape=box];
+    "Read plan, extract all tasks with full text, note context, create TodoWrite" [shape=box];
+    "More tasks remain?" [shape=diamond];
+    "Dispatch final code reviewer subagent for entire implementation" [shape=box];
+    "Use asd:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "1. Read plan, extract all tasks, create TodoWrite" -> "2. Create feature branch";
-    "2. Create feature branch" -> "Pre-read files task will modify";
-    "Pre-read files task will modify" -> "Dispatch asd-forge subagent (./implementer-prompt.md)";
-    "Dispatch asd-forge subagent (./implementer-prompt.md)" -> "Forge asks questions?";
-    "Forge asks questions?" -> "Answer questions, re-dispatch forge" [label="yes"];
-    "Answer questions, re-dispatch forge" -> "Dispatch asd-forge subagent (./implementer-prompt.md)";
-    "Forge asks questions?" -> "Forge implements, tests, self-reviews, commits" [label="no"];
-    "Forge implements, tests, self-reviews, commits" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
-    "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" -> "Spec reviewer approves?";
-    "Spec reviewer approves?" -> "Resume forge to fix spec gaps" [label="no"];
-    "Resume forge to fix spec gaps" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [label="re-review"];
-    "Spec reviewer approves?" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="yes"];
-    "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer approves?";
-    "Code quality reviewer approves?" -> "Resume forge to fix quality issues" [label="no"];
-    "Resume forge to fix quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality reviewer approves?" -> "Mark task complete in TodoWrite" [label="yes"];
-    "Mark task complete in TodoWrite" -> "More tasks?";
-    "More tasks?" -> "Pre-read files task will modify" [label="yes"];
-    "More tasks?" -> "Run full test suite (asd-test-runner subagent)" [label="no"];
-    "Run full test suite (asd-test-runner subagent)" -> "Branch review (3+ tasks only, asd-code-reviewer subagent)";
-    "Branch review (3+ tasks only, asd-code-reviewer subagent)" -> "Present finish options to user";
+    "Read plan, extract all tasks with full text, note context, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
+    "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
+    "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
+    "Implementer subagent implements, tests, commits, self-reviews" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
+    "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" -> "Spec reviewer subagent confirms code matches spec?";
+    "Spec reviewer subagent confirms code matches spec?" -> "Implementer subagent fixes spec gaps" [label="no"];
+    "Implementer subagent fixes spec gaps" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [label="re-review"];
+    "Spec reviewer subagent confirms code matches spec?" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="yes"];
+    "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
+    "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
+    "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
+    "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite" [label="yes"];
+    "Mark task complete in TodoWrite" -> "More tasks remain?";
+    "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
+    "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
+    "Dispatch final code reviewer subagent for entire implementation" -> "Use asd:finishing-a-development-branch";
 }
 ```
 
 ## Prompt templates
 
-Use these templates when constructing Agent tool calls:
+- `./implementer-prompt.md` - Dispatch implementer subagent
+- `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer subagent
+- `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer subagent
 
-- `./implementer-prompt.md` - Template for dispatching asd-forge subagent
-- `./spec-reviewer-prompt.md` - Template for dispatching spec compliance reviewer
-- `./code-quality-reviewer-prompt.md` - Template for dispatching code quality reviewer
-
-## Phase 1: Load and prepare
-
-1. Read the plan file once. Extract every task's full text (including file paths, code, commands, acceptance criteria). Store in memory - do not re-read the plan during execution.
-2. Note inter-task context: what each task produces that later tasks need.
-3. Create a TodoWrite task for each plan task.
-
-## Phase 2: Branch setup
-
-```bash
-git checkout -b feat/<plan-name>
-```
-
-Never start implementation on main/master without explicit user consent.
-
-## Phase 3: Execute tasks
-
-Process tasks sequentially in plan order. For each task:
-
-### 3a. Pre-read files
-
-Read the current version of files the task will modify. Pass contents directly to the subagent so it doesn't need to explore. If the task only creates new files, say so in the prompt.
-
-### 3b. Launch asd-forge subagent
-
-Fill in the template from `./implementer-prompt.md` and call the Agent tool with `subagent_type: "asd:asd-forge"`.
-
-**If forge returns QUESTIONS:** Answer using context from the plan and codebase, then launch a new Agent tool call with the answers included. Max 2 question rounds, then escalate to the user.
-
-**If forge returns BLOCKED:** Mark the task as blocked in TodoWrite, stop, and ask the user.
-
-### 3c. Spec compliance review
-
-After forge returns DONE, fill in the template from `./spec-reviewer-prompt.md` and call the Agent tool with `subagent_type: "asd:asd-code-reviewer"`.
-
-This review checks ONLY whether the implementation matches the spec - nothing more, nothing less.
-
-**If issues found:** Resume the same forge agent (using Agent tool `resume` parameter) to fix spec gaps. Re-dispatch spec reviewer. Max 2 iterations.
-
-### 3d. Code quality review
-
-Only after spec compliance passes. Fill in the template from `./code-quality-reviewer-prompt.md` and call the Agent tool with `subagent_type: "asd:asd-code-reviewer"`.
-
-**If issues found:** Resume the same forge agent to fix quality issues. Re-dispatch code quality reviewer. Max 2 iterations.
-
-**Start code quality review ONLY after spec compliance passes. Never reverse this order.**
-
-### 3e. Move to next task
-
-Only proceed when both reviews pass. Mark the task as completed.
-
-## Phase 4: Final verification
-
-After all tasks complete, use the Agent tool to launch an `asd-test-runner` subagent to run the full test suite. If no test suite exists, verify manually.
-
-## Phase 5: Branch review (3+ tasks only)
-
-Skip for plans with fewer than 3 tasks - per-task reviews are sufficient.
-
-Call the Agent tool with `subagent_type: "asd:asd-code-reviewer"`:
+## Example workflow
 
 ```
-Review scope: branch-level
-Diff: git diff <base-branch>..HEAD
-Focus on cross-task integration issues only. Per-task reviews already passed.
-Report PASS or list issues.
+You: I'm using Subagent-Driven Development to execute this plan.
+
+[Read plan file once: docs/plans/feature-plan.md]
+[Extract all 5 tasks with full text and context]
+[Create TodoWrite with all tasks]
+
+Task 1: Hook installation script
+
+[Get Task 1 text and context (already extracted)]
+[Dispatch implementation subagent with full task text + context]
+
+Implementer: "Before I begin - should the hook be installed at user or system level?"
+
+You: "User level (~/.config/hooks/)"
+
+Implementer: "Got it. Implementing now..."
+[Later] Implementer:
+  - Implemented install-hook command
+  - Added tests, 5/5 passing
+  - Self-review: Found I missed --force flag, added it
+  - Committed
+
+[Dispatch spec compliance reviewer]
+Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
+
+[Get git SHAs, dispatch code quality reviewer]
+Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
+
+[Mark Task 1 complete]
+
+Task 2: Recovery modes
+
+[Get Task 2 text and context (already extracted)]
+[Dispatch implementation subagent with full task text + context]
+
+Implementer: [No questions, proceeds]
+Implementer:
+  - Added verify/repair modes
+  - 8/8 tests passing
+  - Self-review: All good
+  - Committed
+
+[Dispatch spec compliance reviewer]
+Spec reviewer: ❌ Issues:
+  - Missing: Progress reporting (spec says "report every 100 items")
+  - Extra: Added --json flag (not requested)
+
+[Implementer fixes issues]
+Implementer: Removed --json flag, added progress reporting
+
+[Spec reviewer reviews again]
+Spec reviewer: ✅ Spec compliant now
+
+[Dispatch code quality reviewer]
+Code reviewer: Strengths: Solid. Issues (Important): Magic number (100)
+
+[Implementer fixes]
+Implementer: Extracted PROGRESS_INTERVAL constant
+
+[Code reviewer reviews again]
+Code reviewer: ✅ Approved
+
+[Mark Task 2 complete]
+
+...
+
+[After all tasks]
+[Dispatch final code-reviewer]
+Final reviewer: All requirements met, ready to merge
+
+Done!
 ```
 
-## Phase 6: Finish
+## Advantages
 
-Present options to the user:
+**vs. Manual execution:**
+- Subagents follow TDD naturally
+- Fresh context per task (no confusion)
+- Parallel-safe (subagents don't interfere)
+- Subagent can ask questions (before AND during work)
 
-1. **Merge locally** - merge into base branch, run tests, delete feature branch
-2. **Create PR** - push and open a pull request with summary
-3. **Keep as-is** - leave the branch for later
-4. **Discard** - confirm, then delete the branch
+**vs. execution-checkpoints:**
+- Same session (no handoff)
+- Continuous progress (no waiting)
+- Review checkpoints automatic
 
-After the user chooses (not on discard): if a campaign link exists in the plan (`<!-- campaign: path#item -->`), update the campaign file - mark item done, update progress count, update date. Commit the update.
+**Efficiency gains:**
+- No file reading overhead (controller provides full text)
+- Controller curates exactly what context is needed
+- Subagent gets complete information upfront
+- Questions surfaced before work begins (not after)
 
-## Context hygiene
+**Quality gates:**
+- Self-review catches issues before handoff
+- Two-stage review: spec compliance, then code quality
+- Review loops ensure fixes actually work
+- Spec compliance prevents over/under-building
+- Code quality ensures implementation is well-built
 
-- **Your role:** You are the orchestrator. You read the plan, pre-read files, call the Agent tool, and track progress. You never write implementation code.
-- **Subagent prompts:** Use the prompt templates. Pass task text, pre-read files, and one-line prior task summaries.
-- **Processing results:** Extract only DONE/BLOCKED/PASS/issues. Discard narrative and reasoning.
-- **Between tasks:** Do not accumulate context. Each task starts fresh with its own spec and pre-read files.
+**Cost:**
+- More subagent invocations (implementer + 2 reviewers per task)
+- Controller does more prep work (extracting all tasks upfront)
+- Review loops add iterations
+- But catches issues early (cheaper than debugging later)
 
-## Red flags - never do these
+## Red flags
 
-- Write code, edit files, or run tests yourself (use Agent tool)
-- Start implementation on main/master without user consent
-- Skip reviews or proceed with unfixed issues
-- Dispatch multiple forge subagents in parallel (conflicts)
+**Never:**
+- Start implementation on main/master branch without explicit user consent
+- Skip reviews (spec compliance OR code quality)
+- Proceed with unfixed issues
+- Dispatch multiple implementation subagents in parallel (conflicts)
 - Make subagent read plan file (provide full text instead)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
-- Accept "close enough" on spec compliance (reviewer found issues = not done)
-- Skip review loops (reviewer found issues = forge fixes = review again)
+- Accept "close enough" on spec compliance (spec reviewer found issues = not done)
+- Skip review loops (reviewer found issues = implementer fixes = review again)
+- Let implementer self-review replace actual review (both are needed)
+- **Start code quality review before spec compliance is ✅** (wrong order)
 - Move to next task while either review has open issues
-- Let forge self-review replace actual review (both are needed)
-- **Start code quality review before spec compliance passes** (wrong order)
 
-## When to stop and ask
+**If subagent asks questions:**
+- Answer clearly and completely
+- Provide additional context if needed
+- Don't rush them into implementation
 
-- Hit a blocker (missing dependency, repeated test failure, unclear instruction)
-- Plan has critical gaps
-- Fix loop exceeds 2 iterations
-- Verification fails after fixes
+**If reviewer finds issues:**
+- Implementer (same subagent) fixes them
+- Reviewer reviews again
+- Repeat until approved
+- Don't skip the re-review
+
+**If subagent fails task:**
+- Dispatch fix subagent with specific instructions
+- Don't try to fix manually (context pollution)
+
+## Integration
+
+**Required workflow skills:**
+- **asd:planning** - Creates the plan this skill executes
+- **asd:finishing-a-development-branch** - Complete development after all tasks
+
+**Subagents should use:**
+- **asd:test-driven-development** - Subagents follow TDD for each task
+
+**Alternative workflow:**
+- **asd:execution-checkpoints** - Use for single-review execution instead of two-stage

@@ -1,63 +1,23 @@
 # Code quality reviewer prompt template
 
-Copy this template into the Agent tool `prompt` parameter, filling in the bracketed sections.
+Use this template when dispatching a code quality reviewer subagent.
 
-**Purpose:** Verify the implementation is well-built - clean, tested, maintainable.
+**Purpose:** Verify implementation is well-built (clean, tested, maintainable)
 
 **Only dispatch after spec compliance review passes.**
 
 ```
-Review scope: code-quality
+Agent tool (asd:asd-code-reviewer):
+  description: "Review code quality for Task N"
+  subagent_type: "asd:asd-code-reviewer"
+  prompt: |
+    Review scope: code-quality
 
-## What was implemented
-
-[Summary from forge subagent's DONE report]
-
-## Diff
-
-Run: git diff [base-sha]..HEAD
-
-## Your job
-
-Spec compliance already passed - the right things were built. Now check if they were built well:
-
-**Security** - Skip if cosmetic, docs-only, or test-only.
-- Input validation at system boundaries
-- Injection risks, hardcoded secrets
-- Auth/authz on endpoints
-
-**Performance** - Skip if no algorithms, queries, or data processing.
-- O(n^2)+ in hot paths, N+1 queries
-- Missing indexes, unbounded fetches
-
-**Architecture**
-- Component boundaries, separation of concerns
-- Patterns consistent with codebase conventions
-- Coupling between modules that should be independent
-
-**Code quality**
-- Bugs: logic errors, off-by-ones, null/undefined, race conditions
-- Error handling at boundaries
-- Test coverage and quality
-- Dead code, unused imports
-
-Report:
-- PASS (if no issues)
-- Issues found:
-  ### Critical
-  - [file:line] Description + what to fix
-  ### Warning
-  - [file:line] Description + what to fix
-  ### Suggestion
-  - [file:line] Description + suggested improvement
+    WHAT_WAS_IMPLEMENTED: [from implementer's report]
+    PLAN_OR_REQUIREMENTS: Task N from [plan-file]
+    BASE_SHA: [commit before task]
+    HEAD_SHA: [current commit]
+    DESCRIPTION: [task summary]
 ```
 
-## Agent tool call
-
-```json
-{
-  "description": "Quality review task N: [short task summary]",
-  "subagent_type": "asd:asd-code-reviewer",
-  "prompt": "[filled template above]"
-}
-```
+**Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment
