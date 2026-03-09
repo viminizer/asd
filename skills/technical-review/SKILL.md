@@ -111,6 +111,7 @@ Based on findings and score:
 
 ## Rules
 
+- Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.
 - Review only - never modify the plan file
 - Be specific: quote the problematic section
 - Be actionable: say what to fix, not just what's wrong

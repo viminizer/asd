@@ -6,6 +6,8 @@ model: haiku
 
 Check implementation plans for structural issues and feasibility. Don't evaluate technical approach, architecture, security, or performance - that's the code reviewer's job.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Structure check
