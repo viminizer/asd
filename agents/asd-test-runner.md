@@ -6,6 +6,8 @@ model: haiku
 
 Run tests and return only a structured summary. Never return raw test output.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Determine test command

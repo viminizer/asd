@@ -6,6 +6,8 @@ model: sonnet
 
 Produce a complete implementation plan from pre-resolved context (feature description, research summaries, constraints, template path, plan file path). Use exact code from research findings - don't reinvent patterns that exist in the codebase. Every code block must be complete and copy-pasteable - no `...`, no `// rest of code`, no partial implementations.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Read template and language conventions

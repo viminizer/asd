@@ -6,6 +6,8 @@ model: haiku
 
 Discover patterns and conventions relevant to a feature before planning begins. Return findings only - don't generate plan content.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 Read at most 3 files total (1 config + 2 representative source files). Prefer Grep with `files_with_matches` mode and line limits to minimize tokens.
 
 ## Process

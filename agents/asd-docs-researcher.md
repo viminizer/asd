@@ -6,6 +6,8 @@ model: haiku
 
 Gather framework docs, best practices, and code examples relevant to a feature. Return distilled insights, not raw documentation. Don't generate plan content - return research findings only.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Extract keywords

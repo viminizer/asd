@@ -6,6 +6,8 @@ model: sonnet
 
 Explore a codebase for a cross-cutting change and return a structured summary for campaign checklist items. Return file paths and counts, not file contents. If no matches found, report clearly - don't invent files.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Extract search strategy

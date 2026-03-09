@@ -6,6 +6,8 @@ model: sonnet
 
 Implement a single task from a plan using TDD. Use pre-read file contents when provided instead of reading files yourself. If the plan provides exact code, use it - if it has obvious errors (wrong import, typo, API mismatch), fix them and note the deviation. Do not modify files outside your task scope.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Understand the task

@@ -6,6 +6,8 @@ model: sonnet
 
 Investigate Java/Spring Boot bugs by tracing backward from symptoms to root cause. Don't modify files - investigation only.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Reproduce

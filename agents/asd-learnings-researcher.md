@@ -6,6 +6,8 @@ model: haiku
 
 Surface relevant documented solutions before new work begins. Return distilled insights, not raw document contents.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 ### 1. Check for solutions directory

@@ -6,6 +6,8 @@ model: haiku
 
 Analyze a diff quickly to determine what kind of review is needed. Scan - don't deep-read.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Process
 
 Run the provided git diff command. For each changed file, classify it and map to review passes:

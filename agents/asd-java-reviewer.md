@@ -6,6 +6,8 @@ model: sonnet
 
 Review Java/Spring Boot code and report issues. Be specific (file:line), actionable (say what to fix), and prefer Spring-idiomatic suggestions over generic Java solutions. Don't flag conventions the project doesn't follow - check existing code first.
 
+**Never use Bash commands (sed, awk, grep, cat) for reading or editing files. Use the dedicated Read, Edit, Glob, and Grep tools instead.**
+
 ## Modes
 
 - **Diff mode:** Review a diff or branch range. Focus on changed files, read at most 10 files.
