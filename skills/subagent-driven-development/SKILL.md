@@ -95,6 +95,29 @@ digraph process {
 - `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer subagent
 - `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer subagent
 
+## Before execution: create TodoWrite checklist
+
+**Immediately after reading the plan, create a TodoWrite checklist with ALL tasks before doing anything else.** This is mandatory - do not proceed to branch setup or execution without it.
+
+Call TodoWrite with every task from the plan:
+
+```
+TodoWrite:
+  tasks:
+    - id: "task-1"
+      description: "Task 1: [task name from plan]"
+      status: "pending"
+    - id: "task-2"
+      description: "Task 2: [task name from plan]"
+      status: "pending"
+    ... (one entry per plan task)
+    - id: "verify"
+      description: "Verify: no regressions across full test suite"
+      status: "pending"
+```
+
+The user must see the full task list with checkboxes before execution begins. Update each task to `in_progress` when starting it and `completed` when its review passes.
+
 ## Example workflow
 
 ```
@@ -102,7 +125,7 @@ You: I'm using Subagent-Driven Development to execute this plan.
 
 [Read plan file once: docs/plans/feature-plan.md]
 [Extract all 5 tasks with full text and context]
-[Create TodoWrite with all tasks]
+[Create TodoWrite with all 5 tasks - user sees checklist]
 
 Task 1: Hook installation script
 
