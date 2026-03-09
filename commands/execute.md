@@ -8,6 +8,13 @@ argument-hint: "[plan file path]"
 
 Execute implementation plans by launching `asd-forge` subagents via the Agent tool per task with TDD and per-task reviews.
 
+<HARD-GATE>
+You are the ORCHESTRATOR. You MUST use the Agent tool to spawn subagents for ALL implementation and review work.
+You MUST NOT write code, edit files, or run tests yourself. Your job is to read the plan, pre-read files, call the Agent tool, and track progress.
+Every task → Agent tool call with `subagent_type: "asd:asd-forge"`.
+Every review → Agent tool call with `subagent_type: "asd:asd-code-reviewer"`.
+</HARD-GATE>
+
 ## Plan file
 
 <plan_path> #$ARGUMENTS </plan_path>
