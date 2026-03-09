@@ -5,7 +5,9 @@ description: "Use when executing implementation plans. Launches asd-forge subage
 
 # Execution checkpoints
 
-Execute validated plans using subagent-driven development. Each task runs in an independent `asd-forge` subagent via the Agent tool, reviewed, then the next task begins.
+Execute validated plans using subagent-driven development. Each task runs in a fresh `asd-forge` subagent via the Agent tool, reviewed, then the next task begins.
+
+**Core principle:** Fresh subagent per task + review after each = high quality, no context pollution
 
 <HARD-GATE>
 You MUST use the Agent tool to spawn a subagent for EVERY task implementation and EVERY review.
@@ -14,10 +16,59 @@ Your only job as orchestrator is to: read the plan, pre-read files, launch subag
 If you catch yourself writing code or editing files directly, STOP and use the Agent tool instead.
 </HARD-GATE>
 
-## When to use
+## Process
 
-- Running `/asd:execute` with a plan file
-- Implementing features from a validated plan
+```dot
+digraph process {
+    rankdir=TB;
+
+    "1. Read plan, extract all tasks, create TodoWrite" [shape=box];
+    "2. Create feature branch" [shape=box];
+
+    subgraph cluster_per_task {
+        label="Per Task (sequential)";
+        "Pre-read files task will modify" [shape=box];
+        "Dispatch asd-forge subagent (./forge-prompt.md)" [shape=box];
+        "Forge asks questions?" [shape=diamond];
+        "Answer questions, re-dispatch forge" [shape=box];
+        "Forge implements, tests, self-reviews, commits" [shape=box];
+        "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)" [shape=box];
+        "Reviewer approves?" [shape=diamond];
+        "Resume forge to fix issues" [shape=box];
+        "Mark task complete in TodoWrite" [shape=box];
+    }
+
+    "More tasks?" [shape=diamond];
+    "Run full test suite (asd-test-runner subagent)" [shape=box];
+    "Branch review (3+ tasks only, asd-code-reviewer subagent)" [shape=box];
+    "Present finish options to user" [shape=box];
+
+    "1. Read plan, extract all tasks, create TodoWrite" -> "2. Create feature branch";
+    "2. Create feature branch" -> "Pre-read files task will modify";
+    "Pre-read files task will modify" -> "Dispatch asd-forge subagent (./forge-prompt.md)";
+    "Dispatch asd-forge subagent (./forge-prompt.md)" -> "Forge asks questions?";
+    "Forge asks questions?" -> "Answer questions, re-dispatch forge" [label="yes"];
+    "Answer questions, re-dispatch forge" -> "Dispatch asd-forge subagent (./forge-prompt.md)";
+    "Forge asks questions?" -> "Forge implements, tests, self-reviews, commits" [label="no"];
+    "Forge implements, tests, self-reviews, commits" -> "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)";
+    "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)" -> "Reviewer approves?";
+    "Reviewer approves?" -> "Resume forge to fix issues" [label="no"];
+    "Resume forge to fix issues" -> "Dispatch asd-code-reviewer subagent (./reviewer-prompt.md)" [label="re-review"];
+    "Reviewer approves?" -> "Mark task complete in TodoWrite" [label="yes"];
+    "Mark task complete in TodoWrite" -> "More tasks?";
+    "More tasks?" -> "Pre-read files task will modify" [label="yes"];
+    "More tasks?" -> "Run full test suite (asd-test-runner subagent)" [label="no"];
+    "Run full test suite (asd-test-runner subagent)" -> "Branch review (3+ tasks only, asd-code-reviewer subagent)";
+    "Branch review (3+ tasks only, asd-code-reviewer subagent)" -> "Present finish options to user";
+}
+```
+
+## Prompt templates
+
+Use these templates when constructing Agent tool calls:
+
+- `./forge-prompt.md` - Template for dispatching asd-forge subagent
+- `./reviewer-prompt.md` - Template for dispatching asd-code-reviewer subagent
 
 ## Phase 1: Load and prepare
 
@@ -26,8 +77,6 @@ If you catch yourself writing code or editing files directly, STOP and use the A
 3. Create a TodoWrite task for each plan task.
 
 ## Phase 2: Branch setup
-
-Create a feature branch from the current branch:
 
 ```bash
 git checkout -b feat/<plan-name>
@@ -41,43 +90,21 @@ Process tasks sequentially in plan order. For each task:
 
 ### 3a. Pre-read files
 
-Read the current version of files the task will modify. Pass contents directly to the subagent so it doesn't need to explore. If the task only creates new files, pass an empty `pre_read_files`.
+Read the current version of files the task will modify. Pass contents directly to the subagent so it doesn't need to explore. If the task only creates new files, say so in the prompt.
 
 ### 3b. Launch asd-forge subagent
 
-Call the **Agent** tool with these exact parameters:
-- `description`: short task summary (e.g. "Implement user auth endpoint")
-- `subagent_type`: `"asd:asd-forge"`
-- `prompt`: include context, pre-read file contents, and full task text
+Fill in the template from `./forge-prompt.md` and call the Agent tool with `subagent_type: "asd:asd-forge"`.
 
-Example Agent tool call:
-```json
-{
-  "description": "Task 1: Add validation helper",
-  "subagent_type": "asd:asd-forge",
-  "prompt": "Context: Fresh start, no prior tasks.\n\nPre-read files:\n--- src/utils.ts ---\n[file contents here]\n---\n\nTask:\n[full task text from plan]"
-}
-```
+**If forge returns QUESTIONS:** Answer using context from the plan and codebase, then launch a new Agent tool call with the answers included. Max 2 question rounds, then escalate to the user.
 
-**Do NOT use Edit, Write, or Bash to implement the task yourself. The Agent tool subagent does all implementation work.**
-
-**If asd-forge returns QUESTIONS:** Answer using context from the plan and codebase, then launch a new Agent tool call with the answers included. Max 2 question rounds, then escalate to the user.
-
-**If asd-forge returns BLOCKED:** Mark the task as blocked in TodoWrite, then stop and ask the user.
+**If forge returns BLOCKED:** Mark the task as blocked in TodoWrite, stop, and ask the user.
 
 ### 3c. Review
 
-After asd-forge returns DONE, call the **Agent** tool to review:
+After forge returns DONE, fill in the template from `./reviewer-prompt.md` and call the Agent tool with `subagent_type: "asd:asd-code-reviewer"`.
 
-```json
-{
-  "description": "Review task 1: validation helper",
-  "subagent_type": "asd:asd-code-reviewer",
-  "prompt": "Review scope: task-review\n\n## Specification\n[Full task text from Phase 1]\n\n## Diff\ngit diff HEAD~1..HEAD\n\n## Instructions\nCheck both spec compliance and code quality in one pass:\n- Every requirement implemented, nothing missing, nothing extra\n- File paths and test coverage match spec\n- Security, performance, error handling, test quality\nReport PASS or list issues with file:line references."
-}
-```
-
-**If issues found:** Call the Agent tool with the `resume` parameter to resume the same `asd-forge` agent to fix. Re-review via a new Agent tool call. Max 2 iterations, then stop and ask the user.
+**If issues found:** Call the Agent tool with the `resume` parameter to resume the same forge agent to fix. Re-review via a new Agent tool call. Max 2 iterations, then stop and ask the user.
 
 ### 3d. Move to next task
 
@@ -85,47 +112,55 @@ Only proceed when review passes. Mark the task as completed.
 
 ## Phase 4: Final verification
 
-After all tasks complete:
-
-1. Use the Agent tool to launch an `asd-test-runner` subagent (`subagent_type: "asd:asd-test-runner"`) to run the full test suite
-2. If no test suite exists, verify manually by running the changed code paths
-3. Verify acceptance criteria from the plan
+After all tasks complete, use the Agent tool to launch an `asd-test-runner` subagent to run the full test suite. If no test suite exists, verify manually.
 
 ## Phase 5: Branch review (3+ tasks only)
 
 Skip for plans with fewer than 3 tasks - per-task reviews are sufficient.
 
-Call the **Agent** tool for the branch-level review:
+Call the Agent tool with `subagent_type: "asd:asd-code-reviewer"`:
 
-```json
-{
-  "description": "Branch review: full implementation",
-  "subagent_type": "asd:asd-code-reviewer",
-  "prompt": "Review scope: branch-level\nDiff: git diff <base-branch>..HEAD\nFocus on cross-task integration issues only. Per-task reviews already passed.\nReport PASS or list issues."
-}
+```
+Review scope: branch-level
+Diff: git diff <base-branch>..HEAD
+Focus on cross-task integration issues only. Per-task reviews already passed.
+Report PASS or list issues.
 ```
 
-**If issues found:** Fix them, re-run tests, re-review via new Agent tool calls. Max 2 iterations.
+**If issues found:** Fix, re-test, re-review. Max 2 iterations.
 
 ## Phase 6: Finish
 
-Present options to the user with AskUserQuestion:
-
-**"All tasks complete and reviewed. How do you want to integrate?"**
+Present options to the user:
 
 1. **Merge locally** - merge into base branch, run tests, delete feature branch
 2. **Create PR** - push and open a pull request with summary
 3. **Keep as-is** - leave the branch for later
 4. **Discard** - confirm, then delete the branch
 
-After the user chooses (not on discard): if a campaign link exists in the plan (`<!-- campaign: path#item -->`), update the campaign file - mark item done, update progress count, update date. Commit the update. If the campaign file is missing or the item is not found, warn the user and skip.
+After the user chooses (not on discard): if a campaign link exists in the plan (`<!-- campaign: path#item -->`), update the campaign file - mark item done, update progress count, update date. Commit the update.
 
 ## Context hygiene
 
 - **Your role:** You are the orchestrator. You read the plan, pre-read files, call the Agent tool, and track progress. You never write implementation code.
-- **Subagent prompts:** Pass only task text, pre-read files, and one-line prior task summaries. Example: `"Task 2 done: created foo.rb, bar.rb. Commit abc123."`
+- **Subagent prompts:** Use the prompt templates. Pass task text, pre-read files, and one-line prior task summaries.
 - **Processing results:** Extract only DONE/BLOCKED/PASS/issues. Discard narrative and reasoning.
 - **Between tasks:** Do not accumulate context. Each task starts fresh with its own spec and pre-read files.
+
+## Red flags - never do these
+
+- Write code, edit files, or run tests yourself (use Agent tool)
+- Start implementation on main/master without user consent
+- Skip reviews or proceed with unfixed issues
+- Dispatch multiple forge subagents in parallel (conflicts)
+- Make subagent read plan file (provide full text instead)
+- Skip scene-setting context (subagent needs to understand where task fits)
+- Ignore subagent questions (answer before letting them proceed)
+- Accept "close enough" on spec compliance (reviewer found issues = not done)
+- Skip review loops (reviewer found issues = forge fixes = review again)
+- Move to next task while review has open issues
+- Let forge self-review replace actual review (both are needed)
+- Start code quality review before spec compliance passes
 
 ## When to stop and ask
 
