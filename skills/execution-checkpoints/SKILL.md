@@ -7,7 +7,12 @@ description: "Use when executing implementation plans. Launches asd-forge subage
 
 Execute validated plans using subagent-driven development. Each task runs in an independent `asd-forge` subagent via the Agent tool, reviewed, then the next task begins.
 
-**Critical: Every task and review MUST be dispatched via the Agent tool as an independent subagent. Never implement tasks inline in the main context.**
+<HARD-GATE>
+You MUST use the Agent tool to spawn a subagent for EVERY task implementation and EVERY review.
+You MUST NOT write implementation code, edit files, or run tests yourself in the main context.
+Your only job as orchestrator is to: read the plan, pre-read files, launch subagents via Agent tool, and track progress.
+If you catch yourself writing code or editing files directly, STOP and use the Agent tool instead.
+</HARD-GATE>
 
 ## When to use
 
@@ -38,48 +43,41 @@ Process tasks sequentially in plan order. For each task:
 
 Read the current version of files the task will modify. Pass contents directly to the subagent so it doesn't need to explore. If the task only creates new files, pass an empty `pre_read_files`.
 
-### 3b. Run asd-forge via Agent tool
+### 3b. Launch asd-forge subagent
 
-Use the Agent tool to launch an `asd-forge` subagent for this task. Do NOT implement the task inline.
+Call the **Agent** tool with these exact parameters:
+- `description`: short task summary (e.g. "Implement user auth endpoint")
+- `subagent_type`: `"asd:asd-forge"`
+- `prompt`: include context, pre-read file contents, and full task text
 
+Example Agent tool call:
+```json
+{
+  "description": "Task 1: Add validation helper",
+  "subagent_type": "asd:asd-forge",
+  "prompt": "Context: Fresh start, no prior tasks.\n\nPre-read files:\n--- src/utils.ts ---\n[file contents here]\n---\n\nTask:\n[full task text from plan]"
+}
 ```
-Agent tool call:
-  subagent_type: "asd:asd-forge"
-  prompt: |
-    Context: [what prior tasks accomplished, relevant files created/modified]
-    Pre-read files: [contents of files this task will modify]
-    Task: [full task text extracted in Phase 1]
-```
 
-**If asd-forge returns QUESTIONS:** Answer using context from the plan and codebase, then re-launch a new Agent tool call with the answers included. Max 2 question rounds, then escalate to the user.
+**Do NOT use Edit, Write, or Bash to implement the task yourself. The Agent tool subagent does all implementation work.**
+
+**If asd-forge returns QUESTIONS:** Answer using context from the plan and codebase, then launch a new Agent tool call with the answers included. Max 2 question rounds, then escalate to the user.
 
 **If asd-forge returns BLOCKED:** Mark the task as blocked in TodoWrite, then stop and ask the user.
 
 ### 3c. Review
 
-After asd-forge returns DONE, use the Agent tool to launch an `asd-code-reviewer` subagent with both spec compliance and code quality in a single pass:
+After asd-forge returns DONE, call the **Agent** tool to review:
 
-```
-Agent tool call:
-  subagent_type: "asd:asd-code-reviewer"
-  prompt: |
-    Review scope: task-review
-
-## Specification
-[Full task text from Phase 1]
-
-## Diff
-git diff HEAD~1..HEAD
-
-## Instructions
-Check both spec compliance and code quality in one pass:
-- Every requirement implemented, nothing missing, nothing extra
-- File paths and test coverage match spec
-- Security, performance, error handling, test quality
-Report PASS or list issues with file:line references.
+```json
+{
+  "description": "Review task 1: validation helper",
+  "subagent_type": "asd:asd-code-reviewer",
+  "prompt": "Review scope: task-review\n\n## Specification\n[Full task text from Phase 1]\n\n## Diff\ngit diff HEAD~1..HEAD\n\n## Instructions\nCheck both spec compliance and code quality in one pass:\n- Every requirement implemented, nothing missing, nothing extra\n- File paths and test coverage match spec\n- Security, performance, error handling, test quality\nReport PASS or list issues with file:line references."
+}
 ```
 
-**If issues found:** Use the Agent tool with the `resume` parameter to resume the same `asd-forge` agent to fix. Re-review via a new Agent tool call. Max 2 iterations, then stop and ask the user.
+**If issues found:** Call the Agent tool with the `resume` parameter to resume the same `asd-forge` agent to fix. Re-review via a new Agent tool call. Max 2 iterations, then stop and ask the user.
 
 ### 3d. Move to next task
 
@@ -97,16 +95,14 @@ After all tasks complete:
 
 Skip for plans with fewer than 3 tasks - per-task reviews are sufficient.
 
-Use the Agent tool to launch an `asd-code-reviewer` subagent on the entire branch:
+Call the **Agent** tool for the branch-level review:
 
-```
-Agent tool call:
-  subagent_type: "asd:asd-code-reviewer"
-  prompt: |
-    Review scope: branch-level
-    Diff: git diff <base-branch>..HEAD
-    Focus on cross-task integration issues only. Per-task reviews already passed.
-    Report PASS or list issues.
+```json
+{
+  "description": "Branch review: full implementation",
+  "subagent_type": "asd:asd-code-reviewer",
+  "prompt": "Review scope: branch-level\nDiff: git diff <base-branch>..HEAD\nFocus on cross-task integration issues only. Per-task reviews already passed.\nReport PASS or list issues."
+}
 ```
 
 **If issues found:** Fix them, re-run tests, re-review via new Agent tool calls. Max 2 iterations.
@@ -126,7 +122,8 @@ After the user chooses (not on discard): if a campaign link exists in the plan (
 
 ## Context hygiene
 
-- **Dispatching:** Pass only task text, pre-read files, and one-line prior task summaries. Example: `"Task 2 done: created foo.rb, bar.rb. Commit abc123."`
+- **Your role:** You are the orchestrator. You read the plan, pre-read files, call the Agent tool, and track progress. You never write implementation code.
+- **Subagent prompts:** Pass only task text, pre-read files, and one-line prior task summaries. Example: `"Task 2 done: created foo.rb, bar.rb. Commit abc123."`
 - **Processing results:** Extract only DONE/BLOCKED/PASS/issues. Discard narrative and reasoning.
 - **Between tasks:** Do not accumulate context. Each task starts fresh with its own spec and pre-read files.
 
